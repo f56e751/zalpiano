@@ -85,18 +85,21 @@ class Tilt():
         self.pipeLength = pipeLength
 
     def setPunchTypeDetertor(self):
-        self.PunchTypeDetector.setRadius(self.pipeLength * np.cos(np.deg2rad(self.Tiltposition.getTiltAngle)))
+        # self.PunchTypeDetector.setRadius(self.pipeLength * np.cos(np.deg2rad(self.Tiltposition.getTiltAngle())))
+        # TODO add current position to radius
+        self.PunchTypeDetector.setRadius(self.pipeLength * np.cos(np.deg2rad(20)))
         self.PunchTypeDetector.setPerson(self.person_heading, self.personPosition)
         self.PunchTypeDetector.setCenter(self.center)
 
 
     def detectPunch(self):
+        self.Left.setDistance(self.center)
+        self.Right.setDistance(self.center)
         self.setPunchTypeDetertor()
         self.PunchTypeDetector.detectPunchType(self.Left)
         self.PunchTypeDetector.detectPunchType(self.Right)
         leftHitPointRange = None
         rightHitPointRange = None
-
         if self.Left.isDanger():
             leftHitPointRange = self.PunchTypeDetector.getHitPointRange(self.Left)
         elif self.Right.isDanger():
@@ -120,6 +123,13 @@ class Tilt():
             # optimalAction = self.preOptimalAction
 
         # self.preOptimalAction = optimalAction
-
+        
+        if optimalAction != None:
+            print(f"class Tilt() optimal action is {optimalAction}")
+            if math.isnan(optimalAction):
+                print("optimal action is nan")
         return optimalAction
+    
+    def getPunch(self):
+        return self.Left, self.Right
    

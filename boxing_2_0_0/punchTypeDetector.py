@@ -26,13 +26,14 @@ class PunchTypeDetector():
     def setRadius(self,r):
         if r is None:
             raise ValueError("radius has not been set.")
+        self.radius = r
         
 
-    def initializeCriticalValue(self, vel, distance, hitPointDiff, r):
+    def initializeCriticalValue(self, vel, distance, hitPointDiff):
         self.criticalVel = vel
         self.criticalDistance = distance
         self.hitPointDiff = hitPointDiff
-        self.radius = r
+        # self.radius = r
 
     def setPerson(self, personHeading, personCoordinate):
         self.personHeading = personHeading
@@ -58,10 +59,10 @@ class PunchTypeDetector():
         diff = self.getAbsoluteAngleDiff(Punch.direction, self.personHeading)
 
         # 펀치가 끝나지 않았다고 판단되면 그 펀치 종류에 대한 기존의 판단 유지 
-        if Punch.punchType is "Straight":
+        if Punch.punchType == "Straight":
             if not self.isPunchEnd(Punch):
                 return
-        elif Punch.punchType is "Hook":
+        elif Punch.punchType == "Hook":
             if not self.isPunchEnd(Punch):
                 return
 
@@ -78,6 +79,8 @@ class PunchTypeDetector():
         else:
             if Punch.distance < self.criticalDistance:
                 Punch.setPunchType("SlowButClose")
+                # print(f"Punch.distance is {Punch.distance}")
+                # print(f"self.critical distance is: {self.criticalDistance}")
 
             else:
                 Punch.setPunchType("None")
@@ -102,7 +105,7 @@ class PunchTypeDetector():
         
     def isHookCircleEnd(self, Punch: Punch):
         # if punch type is Hook, this function judges that circle trajectory part is End
-        accDirection = Punch.get_latest_acc_direction(self.hookRecognitionTime)
+        accDirection = Punch.get_latest_acc_direction()
         isAccDirChanging = self.getAbsoluteAngleDiff(accDirection, Punch.direction) < self.criticalHookDirectionChange_END
         return isAccDirChanging
 
@@ -111,21 +114,21 @@ class PunchTypeDetector():
     def getHitPointRange(self, Punch: Punch):
         punchType = Punch.punchType
         hitPoint = 0
-        if punchType is "Straight":
-            hitPoint = self.getHitPoint(Punch.direction)
+        if punchType == "Straight":
+            hitPoint = self.getHitPoint(Punch, Punch.direction)
             leftDirection = Punch.direction - self.hitPointDiff
             rightDirection = Punch.direction + self.hitPointDiff
-            leftBoundary = self.getHitPoint(leftDirection)
-            rightBoundary = self.getHitPoint(rightDirection)
+            leftBoundary = self.getHitPoint(Punch, leftDirection)
+            rightBoundary = self.getHitPoint(Punch, rightDirection)
             return {"leftBoundary" : leftBoundary, "rightBoundary" : rightBoundary} 
             
-        elif punchType is "Hook":
+        elif punchType == "Hook":
             if self.isHookCircleEnd(Punch):
-                hitPoint = self.getHitPoint(Punch.direction)
+                hitPoint = self.getHitPoint(Punch, Punch.direction)
                 leftDirection = Punch.direction - self.hitPointDiff
                 rightDirection = Punch.direction + self.hitPointDiff
-                leftBoundary = self.getHitPoint(leftDirection)
-                rightBoundary = self.getHitPoint(rightDirection)
+                leftBoundary = self.getHitPoint(Punch, leftDirection)
+                rightBoundary = self.getHitPoint(Punch, rightDirection)
                 return {"leftBoundary" : leftBoundary, "rightBoundary" : rightBoundary} 
 
             else:
@@ -139,8 +142,6 @@ class PunchTypeDetector():
         else:
             return None
 
-        return hitPoint
-
 
     def isDirectionLeftToCenter(self, Punch: Punch, direction):
         diff = Punch.direction - Punch.heading
@@ -153,22 +154,91 @@ class PunchTypeDetector():
         else:
             return False
         
-    def getHitPoint(self, Punch: Punch, direction): # alpha means degree between point(line and half circle intersection point) and half circle line
-        dx, dy = math.cos(direction), math.sin(direction)
+    # def getHitPoint(self, Punch: Punch, direction): # alpha means degree between point(line and half circle intersection point) and half circle line
+    #     dx, dy = math.cos(direction), math.sin(direction)
+    #     x1, y1 = Punch.coordinate[0], Punch.coordinate[1]
+    #     a, b = self.center[0], self.center[1]
+    #     lineAndCenterDistance = abs(dy * a - dx * b - (x1 * dy - y1 * dx)) / (dx**2 + dy**2)**(1/2)
+    #     centerAndHumanDistance = ((self.center[0] - self.personCoordinate[0])**2 + (self.center[1] - self.personCoordinate[1])**2)**(1/2)
+    #     theta = np.arcsin(lineAndCenterDistance / centerAndHumanDistance) # rad
+    #     print(f"punchTypeDetector -> lineAndCenterDistance: {lineAndCenterDistance}")
+    #     print(f"punchTypeDetector -> self.radius: {self.radius}")
+    #     alpha = np.arccos(lineAndCenterDistance / self.radius) - theta    # rad
+    #     print("alpha is: ", alpha)
+    #     if self.isDirectionLeftToCenter(Punch, direction):
+    #         hitPoint = - np.pi + alpha
+    #     else:
+    #         hitPoint = alpha
+    #     if math.isnan(hitPoint):
+    #         print("hitpoint is Nan")
+    #     print(f"punchTypeDetector -> hitpoint is: {hitPoint}")
+    #     return hitPoint
+
+    def getHitPoint(self, Punch: Punch, direction):
+        v1, v2 = math.cos(direction), math.sin(direction)
         x1, y1 = Punch.coordinate[0], Punch.coordinate[1]
         a, b = self.center[0], self.center[1]
-        lineAndCenterDistance = abs(dy * a - dx * b - (x1 * dy - y1 * dx)) / (dx**2 + dy**2)**(1/2)
-        centerAndHumanDistance = ((self.center[0] - self.personCoordinate[0])**2 + (self.center[1] - self.personCoordinate[1])**2)**(1/2)
-        theta = np.arcsin(lineAndCenterDistance / centerAndHumanDistance) # rad
-        alpha = np.arccos(lineAndCenterDistance / self.radius) - theta    # rad
-
-        if self.isDirectionLeftToCenter(direction):
-            hitPoint = - np.pi + alpha
+        # print([(v1**2 + v2**2), (v1 * (x1 - a) + v2 * (y1 - b), ((x1 - a)**2 + (y1 - b)**2 - self.radius**2))])
+        roots = np.roots([v1**2 + v2**2, v1 * (x1 - a) + v2 * (y1 - b), ((x1 - a)**2 + (y1 - b)**2 - self.radius**2)])
+        # x = x1 + v1 * t, y = y1 + v2 * t
+        # root means t
+        personToCenterVector = np.array([a - self.personCoordinate[0], b - self.personCoordinate[1]])
+        baselineVector = self.rotate90degree(personToCenterVector)
+        if np.iscomplex(roots[0]):
+            hitpoint = self.getOutRangeHitPoint(Punch, direction)
+        elif roots[0] == roots[1]:
+            x = x1 + v1 * roots[0]
+            y = y1 + v2 * roots[0]
+            centerToPointVector = np.array([x - a, y - b])
+            if np.dot(centerToPointVector, personToCenterVector) <= 0:
+                hitpoint = self.getOutRangeHitPoint(Punch, direction)
+            else:
+                hitpoint = - self.angle_between_vectors(baselineVector, centerToPointVector)
         else:
-            hitPoint = alpha
-        return hitPoint
+            x_a = x1 + v1 * roots[0]
+            y_a = y1 + v2 * roots[0]
 
+            x_b = x1 + v1 * roots[0]
+            y_b = y1 + v2 * roots[0]
 
+            if np.dot(np.array([x_a - a, y_a - b]), personToCenterVector) > 0:
+                centerToPointVector = np.array([x_a - a, y_a - b])
+            else:
+                centerToPointVector = np.array([x_b - a, y_b - b])
+
+            hitpoint = - self.angle_between_vectors(baselineVector, centerToPointVector)
+
+        return hitpoint
+    
+    def getOutRangeHitPoint(self, Punch, direction):
+        if self.isDirectionLeftToCenter(Punch, direction):
+            return - np.pi
+        else:
+            return np.pi
+        
+    def rotate90degree(self,vector):
+        rotation = np.array(([0,1],[-1,0]))
+        return np.dot(vector, rotation)
+    
+
+    def angle_between_vectors(self, v1, v2):
+        # Calculate the dot product
+        dot_product = np.dot(v1, v2)
+        
+        # Calculate the magnitudes (norms) of the vectors
+        norm_v1 = np.linalg.norm(v1)
+        norm_v2 = np.linalg.norm(v2)
+        
+        # Calculate the cosine of the angle
+        cos_angle = dot_product / (norm_v1 * norm_v2)
+        
+        # Clip the value to avoid numerical errors that may arise due to floating point precision
+        cos_angle = np.clip(cos_angle, -1.0, 1.0)
+        
+        # Calculate the angle in radians
+        angle_radians = np.arccos(cos_angle)
+
+        return angle_radians
 
     def getAbsoluteAngleDiff(self, angle1, angle2):
         diff = abs(angle1 - angle2)

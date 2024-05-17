@@ -12,7 +12,7 @@ class Punch(PunchDataNumpy):
 
         self.criticalAngleDiff = None
 
-        self.isDanger = False
+        # self.isDanger = False
         self.velDanger = False
         self.distanceDanger = False
 
@@ -27,7 +27,7 @@ class Punch(PunchDataNumpy):
             ValueError("hand has to be Left or Right")
         
         
-        self.punchType = None
+        self.punchType = "None"
         
 
     def initialize(self, coordinate, speed, direction, heading):
@@ -60,3 +60,6 @@ class Punch(PunchDataNumpy):
 
     def isDanger(self):
         return self.punchType != "None"
+    
+    def getPunchType(self):
+        return self.punchType

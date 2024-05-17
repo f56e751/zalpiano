@@ -181,6 +181,9 @@ class HumanTracker:
         elif self.calibration_state == 'yellow':
             self.calibration_state = None 
 
+    def isCalibrationDone(self):
+        return self.calibration_state == None
+
     def get_color_info(self, color_name):
         color_tracker = self.colors.get(color_name)
         if color_tracker:

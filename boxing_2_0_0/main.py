@@ -7,6 +7,7 @@ from aruco import Aruco
 from human import HumanTracker
 from tilt_2_0 import Tilt
 from logPunch import PunchData
+from punch import Punch
 
 import rclpy
 from rclpy.node import Node
@@ -39,12 +40,18 @@ import math
 class IntegratedSystem(Node):
     def __init__(self):
 
+
+
         
 
         ################ pre calibrate color ##############
-        self.green = np.array([ 78, 255, 139])
+        self.green = np.array([ 78, 255, 139])   # 
         self.blue = np.array([107, 223, 153])
         self.yellow = np.array([ 29, 244, 254])
+        
+        self.green = np.array([ 79, 244, 174]) # A 105
+        self.blue = np.array([105, 227, 180])
+        self.yellow = np.array([ 31, 233, 254])
         self.ispreCalibrete = True
         #####################################################
 
@@ -52,6 +59,9 @@ class IntegratedSystem(Node):
         super().__init__('integrated_system')
         timer_period = 0.005  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
+
+        self.action_publisher = self.create_publisher(Float64, 'optimal_action', 10)
+        self.relative_heading_publisher = self.create_publisher(Float64, 'relative_heading', 10)
 
         ###### camera setting #############
         camera = Camera()
@@ -138,45 +148,27 @@ class IntegratedSystem(Node):
 
         ret, self.frame = self.camera.read()
         if ret:
+            if not self.HumanTracker.isCalibrationDone():
+                if self.ispreCalibrete:
+                    self.preCalibrete()
+                self.getHumanPosition()
+                self.show_frame()
+                return
             
             self.process_aruco()
 
-            if self.ispreCalibrete:
-                self.preCalibrete()
+            
 
             self.getHumanPosition()
             self.getPersonHeading()
             self.judgeTilt()
 
+
+            # self.punblish()
+
             ########### draw on frame ################
-            self.showOptimalAction()
-            self.showPosibleAction()
-
-            self.showIsPunch()
-            self.showDangerReason()
-            self.showPunchVel()
-
-            self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
-            self.putTextOnFrame(f"isRightComingCLose: {self.isRightComingClose}", (50,330),1, (255,0,0))
-
-            self.putTextOnFrame(f"right direction: {self.rightDirection}", (50,400),1, (100,100,200))
-            self.putTextOnFrame(f"left direction: {self.leftDirection}", (50,430),1, (100,100,200))
-
-            self.putTextOnFrame(f"person heading: {self.person_heading: .2f}", (50,600),1, (100,255,0))
-            self.putTextOnFrame(f"right heading: {self.right_heading: .2f}", (50,630),1, (100,255,0))
-            self.putTextOnFrame(f"left heading: {self.left_heading: .2f}", (50,660),1, (100,255,0))
-            self.putTextOnFrame(f"marker heading: {self.markerHeading: .2f}", (50,690),1, (100,255,0))
             
-            self.putTextOnFrame(f"fps: {self.fps}", (1000,30),1, (255,0,0))
-
-            self.draw_circle_on_frame(self.humanPosition,10,(0,255,0),2)
-            self.draw_circle_on_frame(self.rightPosition,10,(0,255,0),2)
-            self.draw_circle_on_frame(self.leftPosition,10,(0,255,0),2)
-            self.draw_circle_on_frame(self.center,10,(0,0,255),2)
-
-
-
-            self.showHandPositions('right')
+            self.drawOnFrame()
             #####################################
 
 
@@ -187,6 +179,61 @@ class IntegratedSystem(Node):
 
         else:
             self.get_logger().error('Failed to capture frame.')
+
+
+    def drawOnFrame(self):
+        self.showOptimalAction()
+        self.showPossibleAction()
+
+        self.showIsPunch()
+        # self.showDangerReason() # TODO tilt_2_0 update this method
+        self.showPunchVel()
+
+        self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
+        self.putTextOnFrame(f"isRightComingCLose: {self.isRightComingClose}", (50,330),1, (255,0,0))
+
+        self.putTextOnFrame(f"right direction: {self.rightDirection}", (50,400),1, (100,100,200))
+        self.putTextOnFrame(f"left direction: {self.leftDirection}", (50,430),1, (100,100,200))
+
+        self.putTextOnFrame(f"person heading: {self.person_heading: .2f}", (50,600),1, (100,255,0))
+        self.putTextOnFrame(f"right heading: {self.right_heading: .2f}", (50,630),1, (100,255,0))
+        self.putTextOnFrame(f"left heading: {self.left_heading: .2f}", (50,660),1, (100,255,0))
+        self.putTextOnFrame(f"marker heading: {self.markerHeading: .2f}", (50,690),1, (100,255,0))
+        
+        self.putTextOnFrame(f"fps: {self.fps}", (1000,30),1, (255,0,0))
+
+        self.draw_circle_on_frame(self.humanPosition,10,(0,255,0),2)
+        self.draw_circle_on_frame(self.rightPosition,10,(0,255,0),2)
+        self.draw_circle_on_frame(self.leftPosition,10,(0,255,0),2)
+        self.draw_circle_on_frame(self.center,10,(0,0,255),2)
+
+
+
+        self.showHandPositions('right')
+
+
+        self.showPunchType()
+
+
+
+    def punblish(self):
+        msg = Float64()
+        if self.optimal_action != None:
+            msg.data = float(self.optimal_action)
+            self.action_publisher.publish(msg)
+        elif self.optimal_action == None:
+            self.optimal_action = float(1000.0)
+            msg.data = self.optimal_action
+            self.action_publisher.publish(msg)
+
+
+        heading_msg = Float64()
+        heading_msg.data = self.relative_heading
+        self.relative_heading_publisher.publish(heading_msg)
+
+
+
+
 
     def showHandPositions(self, hand):
         hand_key = 'left' if hand == 'left' else 'right'
@@ -298,6 +345,10 @@ class IntegratedSystem(Node):
         self.putTextOnFrame(f"green speed: {self.leftSpeed: .2f}",(50,170),1,(0,255,0))
         self.putTextOnFrame(f"blue speed: {self.rightSpeed: .2f}",(50,190),1,(0,255,0))
 
+    def showPunchType(self):
+        Left, Right = self.Tilt.getPunch()
+        self.putTextOnFrame(f"left Punch Type: {Left.getPunchType()}",(600,170),1.5,(0,255,0))
+        self.putTextOnFrame(f"right Punch Type: {Right.getPunchType()}",(600,210),1.5,(0,255,0))
 
     def showDangerReason(self):
         if self.Tilt.isDistanceDanger():
@@ -323,7 +374,7 @@ class IntegratedSystem(Node):
         else:
             cv2.circle(self.frame, (int(self.preOptimalPosition[0]), int(self.preOptimalPosition[1])), 10, (0, 0, 255), -1)
 
-    def showPosibleAction(self):
+    def showPossibleAction(self):
         posibleTilt = self.Tilt.posibleTilt
         sampleDistane = 100
         for action in posibleTilt:
