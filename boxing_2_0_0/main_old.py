@@ -5,7 +5,7 @@
 from camera import Camera
 from aruco import Aruco
 from human import HumanTracker
-from tilt_2_0 import Tilt
+from tilt_1_1 import Tilt
 from logPunch import PunchData
 
 import rclpy
@@ -39,8 +39,6 @@ import math
 class IntegratedSystem(Node):
     def __init__(self):
 
-        
-
         ################ pre calibrate color ##############
         self.green = np.array([ 78, 255, 139])
         self.blue = np.array([107, 223, 153])
@@ -73,9 +71,6 @@ class IntegratedSystem(Node):
         self.HumanTracker = HumanTracker()
         self.Tilt = Tilt()
         self.PunchData = PunchData()
-
-        self.pipeLength = 100
-        self.Tilt.initializePipeLength(self.pipeLength)
 
         self.optimal_action = None
         self.preOptimal_action = None
@@ -282,7 +277,6 @@ class IntegratedSystem(Node):
         self.Tilt.initializePersonHeading(self.person_heading)
         self.Tilt.initializeCenter(self.center)
         self.Tilt.initializePersonPosition(self.humanPosition)
-        self.Tilt.setPunchTypeDetertor()
 
         self.optimal_action = self.Tilt.detectPunch()
         if self.optimal_action is None:

@@ -3,6 +3,8 @@ import numpy as np
 from logPunch import PunchData
 from punch import Punch
 from punchTypeDetector import PunchTypeDetector
+from tiltposition import TiltPosition
+from punchPriority import PunchPriority
 import time
 
 ######### ver 0.1 ##############
@@ -25,6 +27,7 @@ class Tilt():
         self.criticalVelocity = 12
         self.criticalAngleDiff = 45
         self.criticalDistance = 200
+        self.hitPointDiff = np.deg2rad(15)
 
         self.closeDistance = 150
 
@@ -33,18 +36,24 @@ class Tilt():
         #####################################################################
 
         self.center = [0,0]
+        self.pipeLength = None  # length of carbon Pipe
+        self.Tiltposition = TiltPosition()
+        # TODO Tiltposition 업데이트하기
 
         self.person_heading = 0
         self.personPosition = [0,0]
 
-        self.Left = Punch()
-        self.Right = Punch()
+        self.Left = Punch("Left")
+        self.Right = Punch("Right")
         self.Left.setCriticalAngleDiff(self.criticalAngleDiff)
         self.Right.setCriticalAngleDiff(self.criticalAngleDiff)
 
+        self.PunchPriority = PunchPriority(self.Left, self.Right)
+
         # self.ComparePunch = ComparePunch(self.Left, self.Right)
         # self.ComparePunch.setCriticalValue(self.criticalVelocity,self.criticalDistance)
-        self.PunchTypeDetector = PunchTypeDetector(self.Left,self.Right)
+        self.PunchTypeDetector = PunchTypeDetector(self.Left, self.Right, self.Tiltposition)
+        self.PunchTypeDetector.initializeCriticalValue(self.criticalVelocity, self.criticalDistance, self.hitPointDiff)
 
         self.prePunchHeadDistance = 0
 
@@ -54,12 +63,13 @@ class Tilt():
         self.optimalAction = None
         self.preOptimalAction = None
 
-    def initializeLeft(self, coordinate, speed, direction, heading):
-        self.Left.add_data(speed, direction, time.time())
+    def initializeLeft(self, coordinate, speed, direction, heading, vel, currentTime):
+        # TODO 나중에 하나로 통합하기
+        self.Left.add_data(vel, speed, direction, currentTime)
         self.Left.initialize(coordinate, speed, direction, heading)
 
-    def initializeRight(self, coordinate, speed, direction, heading):
-        self.Right.add_data(speed, direction, time.time())
+    def initializeRight(self, coordinate, speed, direction, heading, vel, currentTime):
+        self.Right.add_data(vel, speed, direction, currentTime)
         self.Right.initialize(coordinate, speed, direction, heading)
 
     def initializePersonHeading(self, personHeading):
@@ -70,107 +80,46 @@ class Tilt():
 
     def initializeCenter(self,center):
         self.center = center
-    
+
+    def initializePipeLength(self, pipeLength):
+        self.pipeLength = pipeLength
+
+    def setPunchTypeDetertor(self):
+        self.PunchTypeDetector.setRadius(self.pipeLength * np.cos(np.deg2rad(self.Tiltposition.getTiltAngle)))
+        self.PunchTypeDetector.setPerson(self.person_heading, self.personPosition)
+        self.PunchTypeDetector.setCenter(self.center)
+
+
     def detectPunch(self):
-        self.ComparePunch.setDistance(self.center)
-        optimalAction = None
+        self.setPunchTypeDetertor()
+        self.PunchTypeDetector.detectPunchType(self.Left)
+        self.PunchTypeDetector.detectPunchType(self.Right)
+        leftHitPointRange = None
+        rightHitPointRange = None
 
-        if self.ComparePunch.isVelDanger(self.criticalVelocity):
-            
-            self.DangerPunch = self.ComparePunch.getDangerPunch()
-            optimalAction = self.tilt()
-        elif self.ComparePunch.isDistanceDanger(self.criticalDistance):
-            
-            self.DangerPunch = self.ComparePunch.getDangerPunch()
-            optimalAction = self.tilt()
+        if self.Left.isDanger():
+            leftHitPointRange = self.PunchTypeDetector.getHitPointRange(self.Left)
+        elif self.Right.isDanger():
+            rightHitPointRange = self.PunchTypeDetector.getHitPointRange(self.Right)
 
-        if (self.isPunchClose() and self.isActionJump()) or self.isPunchOverCenter():
-            # print(f"actionJump! {self.count} times, optimal action is {self.optimalAction}, preoptimalaction is {self.preOptimalAction}")
-            print(f"freeze movement {self.count} times")
-            self.count += 1
-            # when punch is near center and optimal action changes drastically, optimal action doesn't change!!
-            optimalAction = self.preOptimalAction
 
-        # if self.isPunchEnd():
-        #     print("punch End")
-        #     optimalAction = self.preOptimalAction
-
-        if optimalAction is not None:
-            self.preOptimalAction = optimalAction
-        return optimalAction
-    
-
-    def isPunchOverCenter(self):
-        if self.DangerPunch is not None:
-            punchPersonDistance = self.getDistance(self.DangerPunch.coordinate, self.personPosition) 
-            centerPersonDistance = self.getDistance(self.personPosition, self.center)
-            return punchPersonDistance > centerPersonDistance * 1.2
-        else:
-            return False
-    def isActionJump(self):
-        
-        if self.optimalAction is not None and self.preOptimalAction is not None:
-            return abs(self.optimalAction - self.preOptimalAction) > np.pi * 0.6
-    
-    def isVelDanger(self):
-        return self.ComparePunch.isVelDanger(self.criticalVelocity)
-    
-    def isDistanceDanger(self):
-        return self.ComparePunch.isDistanceDanger(self.criticalDistance)
-    
-    def isPunchClose(self):
-        if self.DangerPunch is not None:
-            return self.DangerPunch.distance < self.closeDistance
-        else:
-            return False
-        
-    # def isColliding(self):
-        
-
-    def isPunchEnd(self):
-        if self.DangerPunch is not None:
-            punchHeadDistance = self.getDistance(self.DangerPunch.coordinate, self.personPosition)
-            if punchHeadDistance < self.prePunchHeadDistance:
-                isPunchEnd = True
+        if leftHitPointRange != None and rightHitPointRange != None:
+            # 둘 다 있을 때는 우선순위를 정해서 피함 (아니면 범위 밖으로 피해도 될듯)
+            if self.PunchPriority().getPriorityPunch().isLeft():
+                optimalAction = leftHitPointRange["leftBoundary"] 
             else:
-                isPunchEnd = False
+                optimalAction = rightHitPointRange["rightBoundary"]
 
-            self.prePunchHeadDistance = punchHeadDistance
-            return isPunchEnd
+        if leftHitPointRange != None:
+            optimalAction = leftHitPointRange["leftBoundary"] 
+        elif rightHitPointRange != None:
+            optimalAction = rightHitPointRange["rightBoundary"]
         else:
-            return False
+            # 펀치가 없을 때
+            optimalAction = None
+            # optimalAction = self.preOptimalAction
 
-    def getDistance(self, position1, position2):
-        return math.sqrt((position1[0] - position2[0])**2 + (position1[1] - position2[1])**2)
+        # self.preOptimalAction = optimalAction
 
-
-
-
-    def calculateAngleDifference(self, action):
-        absoluteActionDegree =  np.rad2deg(np.deg2rad(self.person_heading) + action + math.pi / 2)
-        punchHeading = self.DangerPunch.heading
-
-        punchRightAvoidDegree = (punchHeading - 90) if (punchHeading - 90) > - 180 else (punchHeading - 90) + 360
-        punchLeftAvoidDegree  = (punchHeading + 90) if (punchHeading + 90) < 180 else (punchHeading + 90) - 360
-    
-        rightDifference = self.getAbsoluteAngleDiff(absoluteActionDegree, punchRightAvoidDegree)
-        leftDifference  = self.getAbsoluteAngleDiff(absoluteActionDegree, punchLeftAvoidDegree)
-
-        return min(rightDifference, leftDifference)
-
-    def getAbsoluteAngleDiff(self, angle1, angle2):
-        diff = abs(angle1 - angle2)
-        if diff > 180:
-            diff = abs(diff - 360)
-
-        return diff
-
-    def tilt(self):
-        angleDiff = {}
-        for action in self.posibleTilt:
-            angleDiff[action] = self.calculateAngleDifference(action)
-
-        self.optimalAction =  min(angleDiff, key=angleDiff.get)
-        return self.optimalAction
-
-    
+        return optimalAction
+   

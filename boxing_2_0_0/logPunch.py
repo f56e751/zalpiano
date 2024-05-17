@@ -69,7 +69,6 @@ class PunchData():
             'velocities': list(self.vels)[index:],
             'speeds': list(self.speeds)[index:],
             'accelerations': list(self.accelerations)[index:],
-            'directions': list(self.directions)[index:],
             'times': list(self.times)[index:]
         }
 
@@ -138,16 +137,6 @@ class PunchDataNumpy:
         self.times[self.last] = time # Store current timestamp
         self.calculate_current_acceleration()
 
-    # def add_data(self, speed, acceleration, direction):
-    #     self.last = (self.last + 1) % self.max_frames
-    #     self.speeds[self.last] = speed
-    #     self.directions[self.last] = direction
-    #     vel_x = speed * np.cos(np.radians(direction))
-    #     vel_y = speed * np.sin(np.radians(direction))
-    #     self.vels[self.last] = [vel_x, vel_y]
-    #     self.times[self.last] = time.time()
-    #     self.calculate_current_acceleration()
-
     def calculate_current_acceleration(self):
         if self.last > 0:
             prev_index = (self.last - 1) % self.max_frames
@@ -166,19 +155,9 @@ class PunchDataNumpy:
     def get_latest_direction(self):
         return self.directions[self.last] if self.last != -1 else None
 
-    def get_data_last_seconds(self, last_seconds):
-        # current_time = time.time()
-        current_time = self.times[self.last]
-        # Create a mask to filter data within the last n seconds
-        valid_indices = (current_time - self.times) <= last_seconds
-        return {
-            'velocities': self.speeds[valid_indices],
-            'speeds': self.speeds[valid_indices],
-            'accelerations': self.accelerations[valid_indices],
-            'directions': self.directions[valid_indices],
-            'times': self.times[valid_indices]
-        }
-
+    def get_latest_acc_direction(self):
+        return self.accDirections[self.last] if self.last != -1 else None
+    
     def get_data_last_seconds(self, last_seconds):
         # Use the timestamp at self.last as the reference time
         reference_time = self.times[self.last]
@@ -187,7 +166,7 @@ class PunchDataNumpy:
             'velocities': self.vels[valid_indices],
             'speeds': self.speeds[valid_indices],
             'accelerations': self.accelerations[valid_indices],
-            'directions': self.directions[valid_indices],
+            'accDirections': self.accDirections[valid_indices],
             'times': self.times[valid_indices]
         }
 

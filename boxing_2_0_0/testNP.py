@@ -64,10 +64,17 @@ def measure_performance(class_instance, num_operations):
     # print(f"Retrieved data sample: {slice_data}")  # Show first 5 items of the slice for reference
 
     sliceTime = 0.2
-    start_time = time.time()
-    benchmark_get_data_last_seconds(class_instance, sliceTime)
-    end_time = time.time()    
-    print(f"Time to silce {sliceTime}sec elements: {end_time - start_time} seconds")
+    duration = benchmark_get_data_last_seconds(class_instance, sliceTime)
+    print(f"Time to silce {sliceTime}sec elements: {duration} seconds")
+
+    n = 1000
+    totalTime = 0
+    for i in range(n):
+        totalTime += benchmark_get_data_last_seconds(class_instance, sliceTime)  
+
+    print(f"Time to silce {sliceTime}sec elements AVG {n} times : {totalTime / n}")
+
+    # print(data['times'])
 
 
 
@@ -82,6 +89,9 @@ n = 100000
 measure_performance(deque_punch_data, n)
 measure_performance(numpy_punch_data, n)
 
+data = numpy_punch_data.get_data_last_seconds(0.2)
+np.set_printoptions(formatter={'float': '{:0.10f}'.format})
+print(data['times'])
 # deque_add_duration = benchmark_add_data(deque_punch_data, n)
 # numpy_add_duration = benchmark_add_data(numpy_punch_data, n)
 
