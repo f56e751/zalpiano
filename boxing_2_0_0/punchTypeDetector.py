@@ -15,6 +15,11 @@ class PunchTypeDetector():
         self.center = [0,0]
         self.hitPointDiff = np.deg2rad(15)
 
+        ## hook recogition parameter ####
+        self.criticalHookAcc = 10 # unit/s^2 -> 나중에 아로코 크기에 비례하도록 변경
+        self.criticalHookDirectionChange = 20 # degree
+        self.hookRecognitionTime = 0.1  # sec
+
     def setRadius(self,r):
         self.radius = r
 
@@ -52,12 +57,15 @@ class PunchTypeDetector():
         else:
             if Punch.distance < self.criticalDistance:
                 Punch.setPunchType("SlowButClose")
-                
+
             else:
                 Punch.setPunchType("None")
 
 
-    # def isHook(self, Punch: Punch): 
+    def isHook(self, Punch: Punch):  
+        acceleration = Punch.get_latest_acceleration
+        accDirection = acceleration.getDirection()
+        accMagnitude = acceleration.getMagnitude()
     # TODO         
 
     def getHitPointRange(self, Punch: Punch):
