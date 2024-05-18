@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-        	'box = boxing_2_0_0.main:main',
+        	'main = boxing_2_0_0.main:main',
+        	'main_old = boxing_2_0_0.main_old:main',
+        	'moveBackHuman = boxing_2_0_0.moveBackHuman:main'
         ],
     },
 )

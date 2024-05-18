@@ -1,14 +1,13 @@
-from .camera import Camera
-from .aruco import Aruco
-from .human import HumanTracker
-from .tilt_1_1 import Tilt
-from .logPunch import PunchData
+# from .camera import Camera
+# from .aruco import Aruco
+# from .human import HumanTracker
 
-# from camera import Camera
-# from aruco import Aruco
-# from human import HumanTracker
-# from tilt_1_1 import Tilt
-# from logPunch import PunchData
+from camera import Camera
+from aruco import Aruco
+from human import HumanTracker
+from tilt_2_0 import Tilt
+from logPunch import PunchData
+from punch import Punch
 
 import rclpy
 from rclpy.node import Node
@@ -41,8 +40,12 @@ import math
 class IntegratedSystem(Node):
     def __init__(self):
 
+
+
+        
+
         ################ pre calibrate color ##############
-        self.green = np.array([ 78, 255, 139])
+        self.green = np.array([ 78, 255, 139])   # 
         self.blue = np.array([107, 223, 153])
         self.yellow = np.array([ 29, 244, 254])
         
@@ -59,7 +62,6 @@ class IntegratedSystem(Node):
 
         self.action_publisher = self.create_publisher(Float64, 'optimal_action', 10)
         self.relative_heading_publisher = self.create_publisher(Float64, 'relative_heading', 10)
-
 
         ###### camera setting #############
         camera = Camera()
@@ -81,6 +83,9 @@ class IntegratedSystem(Node):
         self.HumanTracker = HumanTracker()
         self.Tilt = Tilt()
         self.PunchData = PunchData()
+
+        # self.pipeLength = 100
+        # self.Tilt.initializePipeLength(self.pipeLength)
 
         self.optimal_action = None
         self.preOptimal_action = None
@@ -152,17 +157,21 @@ class IntegratedSystem(Node):
             
             self.process_aruco()
 
+            
+
             self.getHumanPosition()
             self.getPersonHeading()
             self.judgeTilt()
 
+
             self.punblish()
 
+
+
             ########### draw on frame ################
+            
             self.drawOnFrame()
-            #####################################
-
-
+            self.getHitPointUnitTest()
             self.show_frame()
 
 
@@ -171,12 +180,13 @@ class IntegratedSystem(Node):
         else:
             self.get_logger().error('Failed to capture frame.')
 
+
     def drawOnFrame(self):
         self.showOptimalAction()
-        self.showPosibleAction()
+        self.showPossibleAction()
 
         self.showIsPunch()
-        self.showDangerReason()
+        # self.showDangerReason() # TODO tilt_2_0 update this method
         self.showPunchVel()
 
         self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
@@ -197,7 +207,15 @@ class IntegratedSystem(Node):
         self.draw_circle_on_frame(self.leftPosition,10,(0,255,0),2)
         self.draw_circle_on_frame(self.center,10,(0,0,255),2)
 
+
+
         self.showHandPositions('right')
+
+
+        self.showPunchType()
+        # print(f"main.drawOnFrame() -> np.around(self.Tilt.getRadius()), is {int(np.around(self.Tilt.getRadius()))}")
+        self.draw_circle_on_frame(self.center, int(np.around(self.Tilt.getRadius())), (0,0,255), 2)
+
 
 
     def punblish(self):
@@ -215,6 +233,8 @@ class IntegratedSystem(Node):
         heading_msg.data = float(np.deg2rad(self.relative_heading))
         # print(self.relative_heading)
         self.relative_heading_publisher.publish(heading_msg)
+
+
 
 
 
@@ -307,11 +327,12 @@ class IntegratedSystem(Node):
     def judgeTilt(self):
         self.isPunchComingClose()
         currentTime = time.time()
-        self.Tilt.initializeLeft(self.leftPosition, self.leftSpeed, self.leftDirection, self.left_heading)
-        self.Tilt.initializeRight(self.rightPosition, self.rightSpeed, self.rightDirection, self.right_heading)
+        self.Tilt.initializeLeft(self.leftPosition, self.leftSpeed, self.leftDirection, self.left_heading, self.leftVelocity, currentTime)
+        self.Tilt.initializeRight(self.rightPosition, self.rightSpeed, self.rightDirection, self.right_heading, self.rightVelocity, currentTime)
         self.Tilt.initializePersonHeading(self.person_heading)
         self.Tilt.initializeCenter(self.center)
         self.Tilt.initializePersonPosition(self.humanPosition)
+        self.Tilt.setPunchTypeDetector()
 
         self.optimal_action = self.Tilt.detectPunch()
         if self.optimal_action is None:
@@ -322,11 +343,29 @@ class IntegratedSystem(Node):
         
         # self.preOptimal_action = self.optimal_action
 
+    def getHitPointUnitTest(self):
+        leftHitPoint, rightHitPoint = self.Tilt.getHitPointUnitTest()
+        if leftHitPoint != (None or 1000):
+            optimalAbsolute = self.calculateDegree(leftHitPoint)
+            sampleDistane = 100
+            optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
+            cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (0, 255, 50), -1)
+
+        # if rightHitPoint != (None or 1000):
+        #     optimalAbsolute = self.calculateDegree(rightHitPoint)
+        #     sampleDistane = 100
+        #     optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
+        #     cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (255, 0, 0), -1)
+
 
     def showPunchVel(self):
         self.putTextOnFrame(f"green speed: {self.leftSpeed: .2f}",(50,170),1,(0,255,0))
         self.putTextOnFrame(f"blue speed: {self.rightSpeed: .2f}",(50,190),1,(0,255,0))
 
+    def showPunchType(self):
+        Left, Right = self.Tilt.getPunch()
+        self.putTextOnFrame(f"left Punch Type: {Left.getPunchType()}",(600,170),1.5,(0,255,0))
+        self.putTextOnFrame(f"right Punch Type: {Right.getPunchType()}",(600,210),1.5,(0,255,0))
 
     def showDangerReason(self):
         if self.Tilt.isDistanceDanger():
@@ -349,17 +388,17 @@ class IntegratedSystem(Node):
             cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (0, 0, 255), -1)
             # print(f"optimalCoordinate is {optimalCoordinate}")
             self.preOptimalPosition = optimalCoordinate
-            # print(f"optimal action is {self.optimal_action}")
         else:
             cv2.circle(self.frame, (int(self.preOptimalPosition[0]), int(self.preOptimalPosition[1])), 10, (0, 0, 255), -1)
-            
-    def showPosibleAction(self):
+
+    def showPossibleAction(self):
         posibleTilt = self.Tilt.posibleTilt
         sampleDistane = 100
         for action in posibleTilt:
             posibleAbsolute = self.calculateDegree(action)
             coordinate =  [self.center[0] - sampleDistane * math.cos(posibleAbsolute), self.center[1] - sampleDistane * math.sin(posibleAbsolute)]
             cv2.circle(self.frame, (int(coordinate[0]), int(coordinate[1])), 7, (0, 255, 0), -1)
+
 
     def preCalibrete(self):
         self.HumanTracker.preCalibrateColor(self.green, self.blue, self.yellow)

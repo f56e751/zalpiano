@@ -84,8 +84,8 @@ class IntegratedSystem(Node):
         self.Tilt = Tilt()
         self.PunchData = PunchData()
 
-        self.pipeLength = 100
-        self.Tilt.initializePipeLength(self.pipeLength)
+        # self.pipeLength = 100
+        # self.Tilt.initializePipeLength(self.pipeLength)
 
         self.optimal_action = None
         self.preOptimal_action = None
@@ -164,14 +164,13 @@ class IntegratedSystem(Node):
             self.judgeTilt()
 
 
-            # self.punblish()
+            self.punblish()
+
+
 
             ########### draw on frame ################
             
             self.drawOnFrame()
-            #####################################
-
-
             self.show_frame()
 
 
@@ -213,7 +212,9 @@ class IntegratedSystem(Node):
 
 
         self.showPunchType()
-
+        # print(f"main.drawOnFrame() -> np.around(self.Tilt.getRadius()), is {int(np.around(self.Tilt.getRadius()))}")
+        self.draw_circle_on_frame(self.center, int(np.around(self.Tilt.getRadius())), (0,0,255), 2)
+        self.showHitPoint()
 
 
     def punblish(self):
@@ -223,15 +224,31 @@ class IntegratedSystem(Node):
             self.action_publisher.publish(msg)
         elif self.optimal_action == None:
             self.optimal_action = float(1000.0)
-            msg.data = self.optimal_action
+            msg.data = float(self.optimal_action)
             self.action_publisher.publish(msg)
 
 
         heading_msg = Float64()
-        heading_msg.data = self.relative_heading
+        heading_msg.data = float(np.deg2rad(self.relative_heading))
+        # print(self.relative_heading)
         self.relative_heading_publisher.publish(heading_msg)
 
 
+    def showHitPoint(self):
+        leftHitPoint = self.Tilt.returnHitPoint()[0]
+        rightHitPoint = self.Tilt.returnHitPoint()[1]
+        print(f"main -> leftHitPoint, rightHitPoint is: {leftHitPoint}")
+        if leftHitPoint != None or leftHitPoint != 1000:
+            optimalAbsolute = self.calculateDegree(leftHitPoint)
+            sampleDistane = 100
+            optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
+            cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (0, 255, 50), -1)
+
+        if rightHitPoint != None or rightHitPoint != 1000:
+            optimalAbsolute = self.calculateDegree(rightHitPoint)
+            sampleDistane = 100
+            optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
+            cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (255, 0, 0), -1)
 
 
 
@@ -329,7 +346,7 @@ class IntegratedSystem(Node):
         self.Tilt.initializePersonHeading(self.person_heading)
         self.Tilt.initializeCenter(self.center)
         self.Tilt.initializePersonPosition(self.humanPosition)
-        self.Tilt.setPunchTypeDetertor()
+        self.Tilt.setPunchTypeDetector()
 
         self.optimal_action = self.Tilt.detectPunch()
         if self.optimal_action is None:
@@ -363,7 +380,7 @@ class IntegratedSystem(Node):
 
     def showOptimalAction(self):
         
-        if self.optimal_action != None:
+        if self.optimal_action != (None or 1000):
             optimalAbsolute = self.calculateDegree(self.optimal_action)
             optimalAbsolute
             sampleDistane = 100
@@ -381,6 +398,7 @@ class IntegratedSystem(Node):
             posibleAbsolute = self.calculateDegree(action)
             coordinate =  [self.center[0] - sampleDistane * math.cos(posibleAbsolute), self.center[1] - sampleDistane * math.sin(posibleAbsolute)]
             cv2.circle(self.frame, (int(coordinate[0]), int(coordinate[1])), 7, (0, 255, 0), -1)
+
 
     def preCalibrete(self):
         self.HumanTracker.preCalibrateColor(self.green, self.blue, self.yellow)

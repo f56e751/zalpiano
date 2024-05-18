@@ -154,7 +154,9 @@ class IntegratedSystem(Node):
 
             self.getHumanPosition()
             self.getPersonHeading()
-            self.judgeTilt()
+            # self.judgeTilt()
+
+            self.moveBack()
 
             self.punblish()
 
@@ -171,6 +173,10 @@ class IntegratedSystem(Node):
         else:
             self.get_logger().error('Failed to capture frame.')
 
+
+    def moveBack(self):
+        self.optimal_action = - np.pi / 2
+
     def drawOnFrame(self):
         self.showOptimalAction()
         self.showPosibleAction()
@@ -179,8 +185,8 @@ class IntegratedSystem(Node):
         self.showDangerReason()
         self.showPunchVel()
 
-        self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
-        self.putTextOnFrame(f"isRightComingCLose: {self.isRightComingClose}", (50,330),1, (255,0,0))
+        # self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
+        # self.putTextOnFrame(f"isRightComingCLose: {self.isRightComingClose}", (50,330),1, (255,0,0))
 
         self.putTextOnFrame(f"right direction: {self.rightDirection}", (50,400),1, (100,100,200))
         self.putTextOnFrame(f"left direction: {self.leftDirection}", (50,430),1, (100,100,200))
