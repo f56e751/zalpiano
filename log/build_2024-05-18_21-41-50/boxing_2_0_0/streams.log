@@ -1,0 +1,23 @@
+[0.503s] Invoking command in '/home/minu/ros2_ws/src/boxing_2_0_0': PYTHONPATH=/home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/prefix_override:/home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base build/boxing_2_0_0 build --build-base /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build install --record /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log --single-version-externally-managed install_data
+[0.705s] running egg_info
+[0.705s] writing build/boxing_2_0_0/boxing_2_0_0.egg-info/PKG-INFO
+[0.706s] writing dependency_links to build/boxing_2_0_0/boxing_2_0_0.egg-info/dependency_links.txt
+[0.706s] writing entry points to build/boxing_2_0_0/boxing_2_0_0.egg-info/entry_points.txt
+[0.706s] writing requirements to build/boxing_2_0_0/boxing_2_0_0.egg-info/requires.txt
+[0.706s] writing top-level names to build/boxing_2_0_0/boxing_2_0_0.egg-info/top_level.txt
+[0.707s] reading manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+[0.708s] writing manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+[0.708s] running build
+[0.708s] running build_py
+[0.709s] running install
+[0.710s] running install_lib
+[0.711s] running install_data
+[0.711s] running install_egg_info
+[0.713s] removing '/home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0-0.0.0-py3.10.egg-info' (and everything under it)
+[0.713s] Copying build/boxing_2_0_0/boxing_2_0_0.egg-info to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0-0.0.0-py3.10.egg-info
+[0.713s] running install_scripts
+[0.730s] Installing main script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+[0.730s] Installing main_old script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+[0.730s] Installing moveBackHuman script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+[0.730s] writing list of installed files to '/home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log'
+[0.747s] Invoked command in '/home/minu/ros2_ws/src/boxing_2_0_0' returned '0': PYTHONPATH=/home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/prefix_override:/home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base build/boxing_2_0_0 build --build-base /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build install --record /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log --single-version-externally-managed install_data

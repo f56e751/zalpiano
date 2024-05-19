@@ -1,0 +1,24 @@
+running egg_info
+writing build/boxing_2_0_0/boxing_2_0_0.egg-info/PKG-INFO
+writing dependency_links to build/boxing_2_0_0/boxing_2_0_0.egg-info/dependency_links.txt
+writing entry points to build/boxing_2_0_0/boxing_2_0_0.egg-info/entry_points.txt
+writing requirements to build/boxing_2_0_0/boxing_2_0_0.egg-info/requires.txt
+writing top-level names to build/boxing_2_0_0/boxing_2_0_0.egg-info/top_level.txt
+reading manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+writing manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+running build
+running build_py
+copying boxing_2_0_0/main.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+running install
+running install_lib
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/main.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/main.py to main.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0-0.0.0-py3.10.egg-info' (and everything under it)
+Copying build/boxing_2_0_0/boxing_2_0_0.egg-info to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0-0.0.0-py3.10.egg-info
+running install_scripts
+Installing main script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+Installing main_old script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+Installing moveBackHuman script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+writing list of installed files to '/home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log'

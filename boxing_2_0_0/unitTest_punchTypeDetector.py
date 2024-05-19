@@ -351,11 +351,11 @@ class IntegratedSystem(Node):
             optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
             cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (0, 255, 50), -1)
 
-        # if rightHitPoint != (None or 1000):
-        #     optimalAbsolute = self.calculateDegree(rightHitPoint)
-        #     sampleDistane = 100
-        #     optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
-        #     cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (255, 0, 0), -1)
+        if rightHitPoint != (None or 1000):
+            optimalAbsolute = self.calculateDegree(rightHitPoint)
+            sampleDistane = 100
+            optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
+            cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (255, 0, 0), -1)
 
 
     def showPunchVel(self):

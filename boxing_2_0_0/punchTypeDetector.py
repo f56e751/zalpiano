@@ -15,7 +15,7 @@ class PunchTypeDetector():
         self.personHeading = 0
         self.personCoordinate = 0
         self.center = [0,0]
-        self.hitPointDiff = np.deg2rad(15)
+        self.hitPointDiff = 15
 
         ## hook recogition parameter ####
         self.criticalHookAcc = 10 # unit/s^2 -> 나중에 아로코 크기에 비례하도록 변경
@@ -78,8 +78,8 @@ class PunchTypeDetector():
             if diff < 25:
                 Punch.setPunchType("Straight")
 
-            elif self.isHook(Punch):
-                Punch.setPunchType("Hook")
+            # elif self.isHook(Punch):
+            #     Punch.setPunchType("Hook")
 
             else:
                 Punch.setPunchType("None")
@@ -106,7 +106,7 @@ class PunchTypeDetector():
             return False
 
     def isPunchEnd(self, Punch: Punch):
-        return self.getAbsoluteAngleDiff(self.personHeading,Punch.direction) > 90
+        return self.getAbsoluteAngleDiff(self.personHeading,Punch.direction) < 90
         
         
     def isHookCircleEnd(self, Punch: Punch):
@@ -127,16 +127,18 @@ class PunchTypeDetector():
     def getHitPointRange(self, Punch: Punch):
         punchType = Punch.punchType
         hitPoint = 0
-        if punchType == "Straight":
+        # TODO 여기세 isPunchEnd()로 펀치가 끝나지 않았을때만 hitpoint 반환하게 설정 
+        if punchType == "Straight" and not self.isPunchEnd(Punch):
             hitPoint = self.getHitPoint(Punch, Punch.direction)
             self.recordHitPoint(Punch, hitPoint)
+            # print(f"class punchtypedetector.gethitpointramge -> Punch.direction: {Punch.direction}, self.hitPointDiff: {self.hitPointDiff}")
             leftDirection = Punch.direction - self.hitPointDiff
             rightDirection = Punch.direction + self.hitPointDiff
             leftBoundary = self.getHitPoint(Punch, leftDirection)
             rightBoundary = self.getHitPoint(Punch, rightDirection)
             return {"leftBoundary" : leftBoundary, "rightBoundary" : rightBoundary} 
             
-        elif punchType == "Hook":
+        elif punchType == "Hook" and not self.isPunchEnd(Punch):
             if self.isHookCircleEnd(Punch):
                 hitPoint = self.getHitPoint(Punch, Punch.direction)
                 self.recordHitPoint(Punch, hitPoint)
@@ -160,10 +162,12 @@ class PunchTypeDetector():
 
     def getHitPointUnitTest(self,Punch: Punch):
         # hitPoint = self.getHitPoint(Punch, Punch.direction)
-        hitPoint = self.getHitPoint(Punch, -90)
+        hitPoint = self.getHitPoint(Punch, -135)
         return hitPoint
 
     def isDirectionLeftToCenter(self, Punch: Punch, direction):
+        # direction = abs(direction)
+        # direction이 theta, theta의 반대 방향에 따라 값이 반대가 되는데 이거 수정하기
         diff = direction - Punch.heading
         if diff > 180:
             diff = diff - 360
@@ -171,9 +175,11 @@ class PunchTypeDetector():
             diff = diff + 360
         
         if diff < 0:
-            return True
-        else:
+            # print("direction is Left")
             return False
+        else:
+            # print("direction is right")
+            return True
         
     # def getHitPoint(self, Punch: Punch, direction): # alpha means degree between point(line and half circle intersection point) and half circle line
     #     dx, dy = math.cos(direction), math.sin(direction)
@@ -205,9 +211,10 @@ class PunchTypeDetector():
         # root means t
         personToCenterVector = np.array([a - self.personCoordinate[0], b - self.personCoordinate[1]])
         baselineVector = self.rotate90degree(personToCenterVector)
+        # print(f"PunchTypeDetector.getHitpoint() baselineVector is {baselineVector}")
         if np.iscomplex(roots[0]):
             hitpoint = self.getOutRangeHitPoint(Punch, direction)
-        elif roots[0] == roots[1]:
+        elif np.isclose(roots[0], roots[1], atol=1e-5):
             x = x1 + v1 * roots[0]
             y = y1 + v2 * roots[0]
             centerToPointVector = np.array([x - a, y - b])
@@ -219,17 +226,23 @@ class PunchTypeDetector():
             x_a = x1 + v1 * roots[0]
             y_a = y1 + v2 * roots[0]
 
-            x_b = x1 + v1 * roots[0]
-            y_b = y1 + v2 * roots[0]
+            x_b = x1 + v1 * roots[1]
+            y_b = y1 + v2 * roots[1]
+            a_distance = math.sqrt((x_a - self.personCoordinate[0])**2 + (y_a - self.personCoordinate[1])**2)
+            b_distance = math.sqrt((x_b - self.personCoordinate[0])**2 + (y_b - self.personCoordinate[1])**2)
 
-            if np.dot(np.array([x_a - a, y_a - b]), personToCenterVector) > 0:
+            # if np.dot(np.array([x_a - a, y_a - b]), personToCenterVector) > 0:
+            #     centerToPointVector = np.array([x_a - a, y_a - b])
+            if a_distance > b_distance:
                 centerToPointVector = np.array([x_a - a, y_a - b])
             else:
                 centerToPointVector = np.array([x_b - a, y_b - b])
 
             hitpoint = - self.angle_between_vectors(baselineVector, centerToPointVector)
-        print(f"class punchTypeDetector.getHitPoint()-> np.iscomplex(roots[0]): {np.iscomplex(roots[0])}")
-        print(f"class punchTypeDetector.getHitPoint()-> hitpoint is: {hitpoint}, punchType is {Punch.getPunchType()}, speed is {Punch.speed}")
+        # print(f"class punchTypeDetector.getHitPoint()-> np.iscomplex(roots[0]): {np.iscomplex(roots[0])}")
+        if Punch.Hand == "Right":
+            print(f"class punchTypeDetector.getHitPoint()-> hitpoint is: {hitpoint}, punchType is {Punch.getPunchType()}, speed is {Punch.speed}")
+        
         return hitpoint
     
     def getOutRangeHitPoint(self, Punch, direction):

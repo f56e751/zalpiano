@@ -1,0 +1,97 @@
+running egg_info
+creating build/boxing_2_0_0/boxing_2_0_0.egg-info
+writing build/boxing_2_0_0/boxing_2_0_0.egg-info/PKG-INFO
+writing dependency_links to build/boxing_2_0_0/boxing_2_0_0.egg-info/dependency_links.txt
+writing entry points to build/boxing_2_0_0/boxing_2_0_0.egg-info/entry_points.txt
+writing requirements to build/boxing_2_0_0/boxing_2_0_0.egg-info/requires.txt
+writing top-level names to build/boxing_2_0_0/boxing_2_0_0.egg-info/top_level.txt
+writing manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+reading manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+writing manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build
+creating /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib
+creating /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/moveBackHuman.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/unitTest_punchTypeDetector.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/camera.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/tilt_1_0.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/tilt_2_0.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/aruco.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/tilt_0_1.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/punchTypeDetector.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/__init__.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/punch.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/testClassTime.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/logPunch.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/human.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/tilt_0_0.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/punchPriority.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/tilt_1_1.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/testtesttestcamera.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/control.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/main_old.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/testNP.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/tiltposition.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+copying boxing_2_0_0/main.py -> /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+running install
+running install_lib
+creating /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/moveBackHuman.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/unitTest_punchTypeDetector.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/camera.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_1_0.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_2_0.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/aruco.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_0_1.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/punchTypeDetector.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/__init__.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/punch.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/testClassTime.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/logPunch.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/human.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_0_0.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/punchPriority.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_1_1.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/testtesttestcamera.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/control.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/main_old.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/testNP.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tiltposition.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+copying /home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/main.py -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/moveBackHuman.py to moveBackHuman.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/unitTest_punchTypeDetector.py to unitTest_punchTypeDetector.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/camera.py to camera.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_1_0.py to tilt_1_0.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_2_0.py to tilt_2_0.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/aruco.py to aruco.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_0_1.py to tilt_0_1.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/punchTypeDetector.py to punchTypeDetector.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/punch.py to punch.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/testClassTime.py to testClassTime.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/logPunch.py to logPunch.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/human.py to human.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_0_0.py to tilt_0_0.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/punchPriority.py to punchPriority.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_1_1.py to tilt_1_1.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/testtesttestcamera.py to testtesttestcamera.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/control.py to control.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/main_old.py to main_old.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/testNP.py to testNP.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tiltposition.py to tiltposition.cpython-310.pyc
+byte-compiling /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/main.py to main.cpython-310.pyc
+running install_data
+creating /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index
+creating /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index/resource_index
+creating /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index/resource_index/packages
+copying resource/boxing_2_0_0 -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index/resource_index/packages
+copying package.xml -> /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/boxing_2_0_0
+running install_egg_info
+Copying build/boxing_2_0_0/boxing_2_0_0.egg-info to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0-0.0.0-py3.10.egg-info
+running install_scripts
+Installing main script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+Installing main_old script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+Installing moveBackHuman script to /home/minu/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+writing list of installed files to '/home/minu/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log'

@@ -1,0 +1,6 @@
+source;share/boxing_2_0_0/hook/pythonpath.ps1
+source;share/boxing_2_0_0/hook/pythonpath.dsv
+source;share/boxing_2_0_0/hook/pythonpath.sh
+source;share/boxing_2_0_0/hook/ament_prefix_path.ps1
+source;share/boxing_2_0_0/hook/ament_prefix_path.dsv
+source;share/boxing_2_0_0/hook/ament_prefix_path.sh

@@ -1,11 +1,15 @@
 import math
 import numpy as np
-from logPunch import PunchData
 from punch import Punch
 from punchTypeDetector import PunchTypeDetector
 from tiltposition import TiltPosition
 from punchPriority import PunchPriority
 import time
+
+# from .punch import Punch
+# from .punchTypeDetector import PunchTypeDetector
+# from .tiltposition import TiltPosition
+# from .punchPriority import PunchPriority
 
 ######### ver 0.1 ##############
 # simplify code with making Punch() $ ComparePunch()
@@ -28,7 +32,7 @@ class Tilt():
         self.criticalVelocity = 12
         self.criticalAngleDiff = 45
         self.criticalDistance = 200
-        self.hitPointDiff = np.deg2rad(15)
+        self.hitPointDiff = 15
 
         self.closeDistance = 150
 
@@ -115,7 +119,7 @@ class Tilt():
             self.PunchTypeDetector.detectPunchType(getattr(self, hand))
             if getattr(self, hand).isDanger():
                 hitPointRanges[hand] = self.PunchTypeDetector.getHitPointRange(getattr(self, hand))
-
+                # print(f"Tilt.detectPunch() -> hitPointRanges[hand] is {hitPointRanges[hand]}")
         leftHitPointRange = hitPointRanges["Left"]
         rightHitPointRange = hitPointRanges["Right"]
 
@@ -123,18 +127,18 @@ class Tilt():
 
         if leftHitPointRange and rightHitPointRange:
             if self.PunchPriority.getPriorityPunch().isLeft():
-                optimalAction = leftHitPointRange["leftBoundary"]
+                optimalAction = leftHitPointRange["rightBoundary"]
             else:
-                optimalAction = rightHitPointRange["rightBoundary"]
+                optimalAction = rightHitPointRange["leftBoundary"]
         elif leftHitPointRange:
-            optimalAction = leftHitPointRange["leftBoundary"]
+            optimalAction = leftHitPointRange["rightBoundary"]
         elif rightHitPointRange:
-            optimalAction = rightHitPointRange["rightBoundary"]
+            optimalAction = rightHitPointRange["leftBoundary"]
         else:
             optimalAction = None
 
         if optimalAction is not None:
-            print(f"class Tilt() optimal action is {optimalAction}")
+            # print(f"class Tilt() optimal action is {optimalAction}")
             if math.isnan(optimalAction):
                 print("optimal action is nan")
 
@@ -151,6 +155,12 @@ class Tilt():
     
     def returnHitPoint(self):
         return self.PunchTypeDetector.returnHitPoint()
+    
+    def isLeftPunchEnd(self):
+        return self.PunchTypeDetector.isPunchEnd(self.Left)
+    
+    def isRightPunchEnd(self):
+        return self.PunchTypeDetector.isPunchEnd(self.Right)
 
     
     def getPunch(self):
