@@ -162,7 +162,7 @@ class PunchTypeDetector():
 
     def getHitPointUnitTest(self,Punch: Punch):
         # hitPoint = self.getHitPoint(Punch, Punch.direction)
-        hitPoint = self.getHitPoint(Punch, -135)
+        hitPoint = self.getHitPoint(Punch, 45)
         return hitPoint
 
     def isDirectionLeftToCenter(self, Punch: Punch, direction):
@@ -176,10 +176,10 @@ class PunchTypeDetector():
         
         if diff < 0:
             # print("direction is Left")
-            return False
+            return True
         else:
             # print("direction is right")
-            return True
+            return False
         
     # def getHitPoint(self, Punch: Punch, direction): # alpha means degree between point(line and half circle intersection point) and half circle line
     #     dx, dy = math.cos(direction), math.sin(direction)
