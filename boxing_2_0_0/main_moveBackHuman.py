@@ -1,14 +1,12 @@
-from .camera import Camera
-from .aruco import Aruco
-from .human import HumanTracker
-from .tilt_1_1 import Tilt
-from .logPunch import PunchData
+import sys
+import os
 
-# from camera import Camera
-# from aruco import Aruco
-# from human import HumanTracker
-# from tilt_1_1 import Tilt
-# from logPunch import PunchData
+# boxing_2_0_0 디렉토리의 부모 디렉토리를 sys.path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+from boxing_2_0_0 import Camera, Aruco, HumanTracker, Tilt_old, PunchData
+
 
 import rclpy
 from rclpy.node import Node
@@ -79,7 +77,7 @@ class IntegratedSystem(Node):
 
         self.Aruco = Aruco()
         self.HumanTracker = HumanTracker()
-        self.Tilt = Tilt()
+        self.Tilt_old = Tilt_old()
         self.PunchData = PunchData()
 
         self.optimal_action = None
@@ -313,13 +311,13 @@ class IntegratedSystem(Node):
     def judgeTilt(self):
         self.isPunchComingClose()
         currentTime = time.time()
-        self.Tilt.initializeLeft(self.leftPosition, self.leftSpeed, self.leftDirection, self.left_heading)
-        self.Tilt.initializeRight(self.rightPosition, self.rightSpeed, self.rightDirection, self.right_heading)
-        self.Tilt.initializePersonHeading(self.person_heading)
-        self.Tilt.initializeCenter(self.center)
-        self.Tilt.initializePersonPosition(self.humanPosition)
+        self.Tilt_old.initializeLeft(self.leftPosition, self.leftSpeed, self.leftDirection, self.left_heading)
+        self.Tilt_old.initializeRight(self.rightPosition, self.rightSpeed, self.rightDirection, self.right_heading)
+        self.Tilt_old.initializePersonHeading(self.person_heading)
+        self.Tilt_old.initializeCenter(self.center)
+        self.Tilt_old.initializePersonPosition(self.humanPosition)
 
-        self.optimal_action = self.Tilt.detectPunch()
+        self.optimal_action = self.Tilt_old.detectPunch()
         if self.optimal_action is None:
             self.isPunch = False
             # self.optimal_action = self.preOptimal_action
@@ -335,9 +333,9 @@ class IntegratedSystem(Node):
 
 
     def showDangerReason(self):
-        if self.Tilt.isDistanceDanger():
+        if self.Tilt_old.isDistanceDanger():
             self.putTextOnFrame("Distance Danger!!!!!!!",(50,100))
-        if self.Tilt.isVelDanger():
+        if self.Tilt_old.isVelDanger():
             self.putTextOnFrame("Vel Danger!!!!!!!",(50,150))
 
     def calculateDegree(self, action):
@@ -360,7 +358,7 @@ class IntegratedSystem(Node):
             cv2.circle(self.frame, (int(self.preOptimalPosition[0]), int(self.preOptimalPosition[1])), 10, (0, 0, 255), -1)
             
     def showPosibleAction(self):
-        posibleTilt = self.Tilt.posibleTilt
+        posibleTilt = self.Tilt_old.posibleTilt
         sampleDistane = 100
         for action in posibleTilt:
             posibleAbsolute = self.calculateDegree(action)

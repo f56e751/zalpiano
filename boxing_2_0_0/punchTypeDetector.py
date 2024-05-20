@@ -1,7 +1,14 @@
 from punch import Punch
 import numpy as np
 import math
-from tiltposition import TiltPosition
+
+import sys
+import os
+
+# boxing_2_0_0 디렉토리의 부모 디렉토리를 sys.path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from boxing_2_0_0 import TiltPosition
 
 class PunchTypeDetector():
     def __init__(self, Left: Punch, Right: Punch, TiltPosition: TiltPosition):

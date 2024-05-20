@@ -1,15 +1,17 @@
-# from .camera import Camera
-# from .aruco import Aruco
-# from .human import HumanTracker
-# from .tilt_2_0 import Tilt
-# from .logPunch import PunchData
+import sys
+import os
 
-from camera import Camera
-from aruco import Aruco
-from human import HumanTracker
-from tilt_2_0 import Tilt
-from logPunch import PunchData
-from punch import Punch
+# boxing_2_0_0 디렉토리의 부모 디렉토리를 sys.path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from boxing_2_0_0 import Camera, Aruco, HumanTracker, Tilt, PunchData, Punch
+
+# from boxing_2_0_0.camera import Camera
+# from aruco import Aruco
+# from human import HumanTracker
+# from tilt_2_0 import Tilt
+# from logPunch import PunchData
+# from punch import Punch
 
 import rclpy
 from rclpy.node import Node

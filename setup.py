@@ -22,7 +22,7 @@ setup(
         'console_scripts': [
         	'main = boxing_2_0_0.main:main',
         	'main_old = boxing_2_0_0.main_old:main',
-        	'moveBackHuman = boxing_2_0_0.moveBackHuman:main'
+        	'moveBackHuman = boxing_2_0_0.main_moveBackHuman:main'
         ],
     },
 )

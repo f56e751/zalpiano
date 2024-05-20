@@ -1,0 +1,102 @@
+[0.645s] Invoking command in '/home/changsul/ros2_ws/src/boxing_2_0_0': PYTHONPATH=/home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/prefix_override:/home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base build/boxing_2_0_0 build --build-base /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build install --record /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log --single-version-externally-managed install_data
+[0.878s] running egg_info
+[0.879s] creating build/boxing_2_0_0/boxing_2_0_0.egg-info
+[0.879s] writing build/boxing_2_0_0/boxing_2_0_0.egg-info/PKG-INFO
+[0.879s] writing dependency_links to build/boxing_2_0_0/boxing_2_0_0.egg-info/dependency_links.txt
+[0.879s] writing entry points to build/boxing_2_0_0/boxing_2_0_0.egg-info/entry_points.txt
+[0.880s] writing requirements to build/boxing_2_0_0/boxing_2_0_0.egg-info/requires.txt
+[0.880s] writing top-level names to build/boxing_2_0_0/boxing_2_0_0.egg-info/top_level.txt
+[0.880s] writing manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+[0.883s] reading manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+[0.884s] writing manifest file 'build/boxing_2_0_0/boxing_2_0_0.egg-info/SOURCES.txt'
+[0.885s] running build
+[0.885s] running build_py
+[0.885s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build
+[0.885s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib
+[0.885s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.885s] copying boxing_2_0_0/main.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/aruco.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/moveBackHuman.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/punch.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/sphirical_control_keyboard.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/tiltposition.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/unitTest_punchTypeDetector.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.886s] copying boxing_2_0_0/tilt_1_0.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.887s] copying boxing_2_0_0/testtesttestcamera.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.887s] copying boxing_2_0_0/testNP.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.887s] copying boxing_2_0_0/human.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.887s] copying boxing_2_0_0/tilt_2_0.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.887s] copying boxing_2_0_0/tilt_0_1.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.888s] copying boxing_2_0_0/punchPriority.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.888s] copying boxing_2_0_0/logPunch.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.888s] copying boxing_2_0_0/tilt_0_0.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.888s] copying boxing_2_0_0/__init__.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.888s] copying boxing_2_0_0/main_old.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.888s] copying boxing_2_0_0/testClassTime.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.889s] copying boxing_2_0_0/punchTypeDetector.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.889s] copying boxing_2_0_0/camera.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.889s] copying boxing_2_0_0/control.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.889s] copying boxing_2_0_0/tilt_1_1.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0
+[0.890s] running install
+[0.890s] running install_lib
+[0.891s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.891s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/main.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.891s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/aruco.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.892s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/moveBackHuman.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.892s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/punch.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.892s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/sphirical_control_keyboard.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.892s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tiltposition.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.892s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/unitTest_punchTypeDetector.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.892s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_1_0.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/testtesttestcamera.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/testNP.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/human.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_2_0.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_0_1.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/punchPriority.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.893s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/logPunch.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_0_0.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/__init__.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/main_old.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/testClassTime.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/punchTypeDetector.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/camera.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.894s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/control.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.895s] copying /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build/lib/boxing_2_0_0/tilt_1_1.py -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0
+[0.895s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/main.py to main.cpython-310.pyc
+[0.900s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/aruco.py to aruco.cpython-310.pyc
+[0.902s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/moveBackHuman.py to moveBackHuman.cpython-310.pyc
+[0.905s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/punch.py to punch.cpython-310.pyc
+[0.906s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/sphirical_control_keyboard.py to sphirical_control_keyboard.cpython-310.pyc
+[0.907s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tiltposition.py to tiltposition.cpython-310.pyc
+[0.907s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/unitTest_punchTypeDetector.py to unitTest_punchTypeDetector.cpython-310.pyc
+[0.911s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_1_0.py to tilt_1_0.cpython-310.pyc
+[0.912s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/testtesttestcamera.py to testtesttestcamera.cpython-310.pyc
+[0.913s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/testNP.py to testNP.cpython-310.pyc
+[0.914s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/human.py to human.cpython-310.pyc
+[0.915s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_2_0.py to tilt_2_0.cpython-310.pyc
+[0.916s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_0_1.py to tilt_0_1.cpython-310.pyc
+[0.917s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/punchPriority.py to punchPriority.cpython-310.pyc
+[0.917s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/logPunch.py to logPunch.cpython-310.pyc
+[0.919s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_0_0.py to tilt_0_0.cpython-310.pyc
+[0.919s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/__init__.py to __init__.cpython-310.pyc
+[0.920s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/main_old.py to main_old.cpython-310.pyc
+[0.922s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/testClassTime.py to testClassTime.cpython-310.pyc
+[0.922s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/punchTypeDetector.py to punchTypeDetector.cpython-310.pyc
+[0.924s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/camera.py to camera.cpython-310.pyc
+[0.924s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/control.py to control.cpython-310.pyc
+[0.925s] byte-compiling /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0/tilt_1_1.py to tilt_1_1.cpython-310.pyc
+[0.926s] running install_data
+[0.926s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index
+[0.926s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index/resource_index
+[0.927s] creating /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index/resource_index/packages
+[0.927s] copying resource/boxing_2_0_0 -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/ament_index/resource_index/packages
+[0.927s] copying package.xml -> /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/share/boxing_2_0_0
+[0.927s] running install_egg_info
+[0.930s] Copying build/boxing_2_0_0/boxing_2_0_0.egg-info to /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages/boxing_2_0_0-0.0.0-py3.10.egg-info
+[0.931s] running install_scripts
+[0.950s] Installing main script to /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+[0.950s] Installing main_old script to /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+[0.950s] Installing moveBackHuman script to /home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/boxing_2_0_0
+[0.951s] writing list of installed files to '/home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log'
+[0.972s] Invoked command in '/home/changsul/ros2_ws/src/boxing_2_0_0' returned '0': PYTHONPATH=/home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/prefix_override:/home/changsul/ros2_ws/src/boxing_2_0_0/install/boxing_2_0_0/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base build/boxing_2_0_0 build --build-base /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/build install --record /home/changsul/ros2_ws/src/boxing_2_0_0/build/boxing_2_0_0/install.log --single-version-externally-managed install_data

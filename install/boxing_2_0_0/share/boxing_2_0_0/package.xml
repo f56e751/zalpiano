@@ -12,11 +12,11 @@
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>
   
-  <depend>camera</depend>
-  <depend>aruco</depend>
-  <depend>human</depend>
-  <depend>tilt_1_1</depend>
-  <depend>logPunch</depend>
+  <depend>.camera</depend>
+  <depend>.aruco</depend>
+  <depend>.human</depend>
+  <depend>.tilt_1_1</depend>
+  <depend>.logPunch</depend>
 
   <depend>tf2_ros</depend>
   <depend>tf2_geometry_msgs</depend>

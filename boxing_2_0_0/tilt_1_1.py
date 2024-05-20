@@ -1,6 +1,15 @@
 import math
 import numpy as np
 
+import sys
+import os
+
+# boxing_2_0_0 디렉토리의 부모 디렉토리를 sys.path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from boxing_2_0_0 import Punch
+
+
 ######### ver 0.1 ##############
 # simplify code with making Punch() $ ComparePunch()
 
@@ -8,7 +17,7 @@ import numpy as np
 # freeze position when punch is close or over center
 
 
-class Tilt():
+class Tilt_old():
     def __init__(self):
         # distance variable has to be propotoinal to aruco size
         

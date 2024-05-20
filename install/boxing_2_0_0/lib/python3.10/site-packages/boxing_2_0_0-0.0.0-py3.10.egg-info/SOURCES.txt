@@ -14,6 +14,7 @@ boxing_2_0_0/moveBackHuman.py
 boxing_2_0_0/punch.py
 boxing_2_0_0/punchPriority.py
 boxing_2_0_0/punchTypeDetector.py
+boxing_2_0_0/sphirical_control_keyboard.py
 boxing_2_0_0/testClassTime.py
 boxing_2_0_0/testNP.py
 boxing_2_0_0/testtesttestcamera.py

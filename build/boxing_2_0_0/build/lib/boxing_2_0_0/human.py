@@ -30,7 +30,7 @@ class ColorTracker:
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if contours:
             largest_contour = max(contours, key=cv2.contourArea)
-            if cv2.contourArea(largest_contour) > 100:
+            if cv2.contourArea(largest_contour) > 150:
                 x, y, w, h = cv2.boundingRect(largest_contour)
                 cx, cy = x + w // 2, y + h // 2
                 measurement = np.array([[np.float32(cx)], [np.float32(cy)]])

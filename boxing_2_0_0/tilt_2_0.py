@@ -1,10 +1,12 @@
 import math
 import numpy as np
-from punch import Punch
-from punchTypeDetector import PunchTypeDetector
-from tiltposition import TiltPosition
-from punchPriority import PunchPriority
-import time
+
+import sys
+import os
+
+# boxing_2_0_0 디렉토리의 부모 디렉토리를 sys.path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from boxing_2_0_0 import Punch, PunchTypeDetector, PunchPriority, TiltPosition
 
 # from .punch import Punch
 # from .punchTypeDetector import PunchTypeDetector

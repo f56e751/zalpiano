@@ -17,7 +17,8 @@ class Punch(PunchDataNumpy):
         self.distanceDanger = False
 
         self.distance = 0
-        self.punchTypes = ["None", "Straight", "Hook", "SlowButClose"] 
+        self.punchTypes = ["None", "Straight", "Hook", "SlowButClose", "PunchEnd"]
+        #  속도는 충족하는데 ispunchEnd()로 방향이 다른거는 PunchEnd로 변경
 
         if hand == 'Left':
             self.Hand = 'Left'

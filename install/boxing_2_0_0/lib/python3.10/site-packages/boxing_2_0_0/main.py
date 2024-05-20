@@ -1,8 +1,15 @@
-from .camera import Camera
-from .aruco import Aruco
-from .human import HumanTracker
+# from .camera import Camera
+# from .aruco import Aruco
+# from .human import HumanTracker
+# from .tilt_2_0 import Tilt
+# from .logPunch import PunchData
+# import boxing_2_0_0
 
-# from camera import Camera
+# import Camerae
+# from boxing_2_0_0 
+from boxing_2_0_0 import Camera, Aruco, HumanTracker, Tilt, PunchData, Punch
+
+# from boxing_2_0_0.camera import Camera
 # from aruco import Aruco
 # from human import HumanTracker
 # from tilt_2_0 import Tilt
@@ -39,11 +46,6 @@ import math
 
 class IntegratedSystem(Node):
     def __init__(self):
-
-
-
-        
-
         ################ pre calibrate color ##############
         self.green = np.array([ 78, 255, 139])   # 
         self.blue = np.array([107, 223, 153])
@@ -157,17 +159,11 @@ class IntegratedSystem(Node):
             
             self.process_aruco()
 
-            
-
             self.getHumanPosition()
             self.getPersonHeading()
             self.judgeTilt()
 
-
             self.punblish()
-
-
-
             ########### draw on frame ################
             
             self.drawOnFrame()
@@ -199,7 +195,7 @@ class IntegratedSystem(Node):
         self.putTextOnFrame(f"left heading: {self.left_heading: .2f}", (50,660),1, (100,255,0))
         self.putTextOnFrame(f"marker heading: {self.markerHeading: .2f}", (50,690),1, (100,255,0))
         
-        self.putTextOnFrame(f"fps: {self.fps}", (1000,30),1, (255,0,0))
+        self.putTextOnFrame(f"fps: {self.fps}", (100,30),1, (255,0,0))
 
         self.draw_circle_on_frame(self.humanPosition,10,(0,255,0),2)
         self.draw_circle_on_frame(self.rightPosition,10,(0,255,0),2)
@@ -218,6 +214,7 @@ class IntegratedSystem(Node):
 
         self.putTextOnFrame(f"is Left Punch End: {self.Tilt.isLeftPunchEnd()}", (700,270),1, (255,0,0) )
         self.putTextOnFrame(f"is Right Punch End: {self.Tilt.isRightPunchEnd()}", (700,300),1, (255,0,0) )
+
 
 
     def punblish(self):
@@ -361,8 +358,10 @@ class IntegratedSystem(Node):
 
 
     def showPunchVel(self):
-        self.putTextOnFrame(f"green speed: {self.leftSpeed: .2f}",(50,170),1,(0,255,0))
-        self.putTextOnFrame(f"blue speed: {self.rightSpeed: .2f}",(50,190),1,(0,255,0))
+        self.putTextOnFrame(f"left speed:{self.leftSpeed: .2f}",(50,170),1,(0,255,0))
+        self.putTextOnFrame(f"left acc mag:{self.Tilt.Left.get_latest_acceleration(): .1f}, left acc dir:{self.Tilt.Left.get_latest_acc_direction(): .1f} ",(50,195),1,(0,255,0))
+        self.putTextOnFrame(f"right speed:{self.rightSpeed: .2f}",(50,220),1,(0,255,0))
+        self.putTextOnFrame(f"right acc mag:{self.Tilt.Right.get_latest_acceleration(): .1f}, left acc dir:{self.Tilt.Right.get_latest_acc_direction(): .1f} ",(50,245),1,(0,255,0))
 
     def showPunchType(self):
         Left, Right = self.Tilt.getPunch()
