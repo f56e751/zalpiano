@@ -10,6 +10,8 @@ from human import HumanTracker
 from tilt_2_0 import Tilt
 from logPunch import PunchData
 from punch import Punch
+from punchcost import PunchCost
+from coordinateTransformer import CoordinateTransformer
 
 import rclpy
 from rclpy.node import Node
@@ -80,6 +82,8 @@ class IntegratedSystem(Node):
         self.HumanTracker = HumanTracker()
         self.Tilt = Tilt()
         self.PunchData = PunchData()
+        self.PunchCost = PunchCost()
+        self.CoordinateTransformer = CoordinateTransformer()
 
         # self.pipeLength = 100
         # self.Tilt.initializePipeLength(self.pipeLength)
@@ -162,6 +166,8 @@ class IntegratedSystem(Node):
             ########### draw on frame ################
             
             self.drawOnFrame()
+            # self.update_visualization()
+            self.calculateCost()
             self.show_frame()
 
 
@@ -169,6 +175,74 @@ class IntegratedSystem(Node):
 
         else:
             self.get_logger().error('Failed to capture frame.')
+
+
+
+    import cv2
+    import numpy as np
+
+    def draw_line_with_gradient(self,img, pt1, pt2, max_distance=100):
+        # Drawing a basic line
+        cv2.line(img, pt1, pt2, (255, 0, 0), 2)
+
+        # Create a blank image with the same dimensions
+        mask = np.zeros_like(img)
+
+        # Compute normal vector to the line
+        dx = pt2[0] - pt1[0]
+        dy = pt2[1] - pt1[1]
+        length = np.sqrt(dx**2 + dy**2)
+        if length == 0:
+            return img  # to avoid division by zero if points coincide
+
+        normal = (-dy / length, dx / length)
+
+        # For each point in the mask, calculate distance from the line
+        for y in range(img.shape[0]):
+            for x in range(img.shape[1]):
+                # Point-line distance
+                distance = abs(normal[0] * (x - pt1[0]) + normal[1] * (y - pt1[1]))
+                if distance <= max_distance:
+                    # Scale color based on distance
+                    intensity = 255 - int(255 * (distance / max_distance))
+                    cv2.circle(mask, (x, y), 1, (intensity, intensity, 255), -1)
+
+        # Blend the original image and the mask
+        alpha = 0.5
+        cv2.addWeighted(src1=img, alpha=1-alpha, src2=mask, beta=alpha, gamma=0, dst=img)
+
+        return img
+    
+
+    def calculateCost(self):
+        self.PunchCost.initialize_positions(self.humanPosition, self.leftPosition, self.rightPosition)
+        self.PunchCost.calculate_total_cost()
+        xMin, yMin = self.PunchCost.find_lowest_cost_point()
+
+        angle = np.radians(self.person_heading - 90)
+        
+        self.CoordinateTransformer.initialize(self.center, angle)
+
+        for x in self.PunchCost.x:
+            for y in self.PunchCost.y:
+                self.draw_circle_on_frame(self.CoordinateTransformer.transform([x,y]),1,(0,255,0),2)
+        
+
+
+    def update_visualization(self):
+        # Get positions from your tracking system
+        human_position = (int(self.humanPosition[0]), int(self.humanPosition[0]))
+        right_position = (int(self.rightPosition[0]), int(self.rightPosition[1]))
+        left_position = (int(self.leftPosition[0]), int(self.leftPosition[1]))
+        print(human_position)
+        # Draw lines with gradients
+        self.frame = self.draw_line_with_gradient(self.frame, human_position, right_position)
+        self.frame = self.draw_line_with_gradient(self.frame, human_position, left_position)
+
+        # Additional debug information
+        cv2.imshow("Integrated System", self.frame)
+        cv2.waitKey(1)
+
 
 
     def drawOnFrame(self):
