@@ -13,6 +13,9 @@ class Acceleration():
             angleDiff = 360 - angleDiff
 
         # self.direction = 
+        # TODO 에러 수정
+        #       /home/minu/ros2_ws/src/boxing_2_0_0/boxing_2_0_0/logPunch.py:16: RuntimeWarning: invalid value encountered in sqrt
+        #       self.magnitude = np.sqrt(np.power(currSpeed,2) + np.power(preSpeed,2) - 2 * currSpeed * preSpeed * np.cos(np.deg2rad(angleDiff)))
         self.magnitude = np.sqrt(np.power(currSpeed,2) + np.power(preSpeed,2) - 2 * currSpeed * preSpeed * np.cos(np.deg2rad(angleDiff)))
         self.direction = np.degrees(np.arctan2(currVel[1] - preVel[1], currVel[0] - preVel[0]))
 

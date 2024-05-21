@@ -13,6 +13,11 @@ from punch import Punch
 from punchcost import PunchCost
 from coordinateTransformer import CoordinateTransformer
 
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap, Normalize
+from matplotlib.cm import ScalarMappable
+
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -215,18 +220,44 @@ class IntegratedSystem(Node):
     
 
     def calculateCost(self):
-        self.PunchCost.initialize_positions(self.humanPosition, self.leftPosition, self.rightPosition)
-        self.PunchCost.calculate_total_cost()
+        xAngleDiff = self.person_heading - 90
+        self.PunchCost.calculate_total_cost(self.humanPosition, self.center, self.leftPosition, self.rightPosition, xAngleDiff)
         xMin, yMin = self.PunchCost.find_lowest_cost_point()
 
         angle = np.radians(self.person_heading - 90)
-        
-        self.CoordinateTransformer.initialize(self.center, angle)
 
-        for x in self.PunchCost.x:
-            for y in self.PunchCost.y:
-                self.draw_circle_on_frame(self.CoordinateTransformer.transform([x,y]),1,(0,255,0),2)
+        # for x in self.PunchCost.x:
+        #     for y in self.PunchCost.y:
+        #         self.draw_circle_on_frame(self.CoordinateTransformer.transform([x,y]),1,(0,255,0),2)
         
+
+        cmap = plt.get_cmap('viridis')
+        norm = Normalize(vmin=np.min(self.PunchCost.C_total), vmax=np.max(self.PunchCost.C_total))
+        scalar_map = ScalarMappable(norm=norm, cmap=cmap)
+
+
+        colors = ["green", "red"]  # 초록에서 빨강으로
+        cmap = LinearSegmentedColormap.from_list("cost_color_map", colors, N=256)
+        norm = Normalize(vmin=0, vmax=2)  # 코스트 값의 예상 범위 설정
+        scalar_map = ScalarMappable(norm=norm, cmap=cmap)
+        for index, (x, y) in enumerate(zip(self.PunchCost.xMesh, self.PunchCost.yMesh)):
+            cost_value = self.PunchCost.C_total[index]
+            rgba_color = scalar_map.to_rgba(cost_value)
+            # 변환 과정: RGBA -> BGR, 스케일 조정
+            bgr_color = (rgba_color[2] * 255, rgba_color[1] * 255, rgba_color[0] * 255)  # RGBA to BGR and scaling to 0-255
+            transformed_point = self.CoordinateTransformer.transform(self.center, angle, [x, y])
+            self.draw_circle_on_frame(transformed_point, 1, bgr_color, 2)  # 텍스트 위치 조정 (원 옆)
+            
+
+            
+            
+            # text_color = (rgba_color[0] * 255, rgba_color[1] * 255, rgba_color[2] * 255)  # RGB 색상으로 변경
+            text_color = (rgba_color[2] * 255, rgba_color[1] * 255, rgba_color[0] * 255)  # RGB to BGR for OpenCV
+
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            text_position = (int(transformed_point[0] + 10), int(transformed_point[1]))  # 텍스트 위치 조정 (원 옆)
+            cv2.putText(self.frame, f"{cost_value:.2f}", text_position, font, 0.4, text_color, 1, cv2.LINE_AA)
+
 
 
     def update_visualization(self):
@@ -247,7 +278,7 @@ class IntegratedSystem(Node):
 
     def drawOnFrame(self):
         self.showOptimalAction()
-        self.showPossibleAction()
+        # self.showPossibleAction()
 
         self.showIsPunch()
         # self.showDangerReason() # TODO tilt_2_0 update this method
@@ -256,8 +287,8 @@ class IntegratedSystem(Node):
         self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
         self.putTextOnFrame(f"isRightComingCLose: {self.isRightComingClose}", (50,330),1, (255,0,0))
 
-        self.putTextOnFrame(f"right direction: {self.rightDirection}", (50,400),1, (100,100,200))
-        self.putTextOnFrame(f"left direction: {self.leftDirection}", (50,430),1, (100,100,200))
+        self.putTextOnFrame(f"right direction: {self.rightDirection: .2f}", (50,400),1, (100,100,200))
+        self.putTextOnFrame(f"left direction: {self.leftDirection: .2f}", (50,430),1, (100,100,200))
 
         self.putTextOnFrame(f"person heading: {self.person_heading: .2f}", (50,600),1, (100,255,0))
         self.putTextOnFrame(f"right heading: {self.right_heading: .2f}", (50,630),1, (100,255,0))
