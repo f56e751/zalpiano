@@ -7,11 +7,13 @@
 from camera import Camera
 from aruco import Aruco
 from human import HumanTracker
-from tilt_2_0 import Tilt
 from logPunch import PunchData
 from punch import Punch
 from punchcost import PunchCost
 from coordinateTransformer import CoordinateTransformer
+from punchcostfunction import SegmentCostFunction, LineCostFunction, SegmentCostFunction_out0
+from sandbagPosition import SandbagPosition
+from optimalAction import OptimalAction
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, Normalize
@@ -29,17 +31,8 @@ import matplotlib.pyplot as plt
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from geometry_msgs.msg import Quaternion
 
-from std_msgs.msg import Float64
+from std_msgs.msg import Float64, Float64MultiArray
 
-import tf2_ros
-from tf2_ros import TransformBroadcaster
-from geometry_msgs.msg import TransformStamped
-import tf2_geometry_msgs
-
-import subprocess
-import re
-
-import collections
 import time
 import math
 
@@ -64,9 +57,11 @@ class IntegratedSystem(Node):
         timer_period = 0.005  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
-        self.action_publisher = self.create_publisher(Float64, 'optimal_action', 10)
+        self.action_publisher = self.create_publisher(Float64MultiArray, 'optimal_action', 10)
         self.relative_heading_publisher = self.create_publisher(Float64, 'relative_heading', 10)
+        self.maxLength_publisher = self.create_publisher(Float64, 'maxLength', 10)
 
+        self.isMaxLengthSend = False
         ###### camera setting #############
         camera = Camera()
         fps = 120
@@ -85,10 +80,19 @@ class IntegratedSystem(Node):
 
         self.Aruco = Aruco()
         self.HumanTracker = HumanTracker()
-        self.Tilt = Tilt()
         self.PunchData = PunchData()
         self.PunchCost = PunchCost()
+        self.isInitializeCostDone = False
         self.CoordinateTransformer = CoordinateTransformer()
+        self.CostFunction = None
+        self.SandbagPosition = SandbagPosition()
+
+        criticalDistance = 200
+        semiCriticalDistance = 250
+        self.OptimalAction = OptimalAction(self.PunchCost, self.SandbagPosition, criticalDistance, semiCriticalDistance)
+
+
+        
 
         # self.pipeLength = 100
         # self.Tilt.initializePipeLength(self.pipeLength)
@@ -120,10 +124,6 @@ class IntegratedSystem(Node):
         self.rightHeadingVector = [0,0]
 
 
-        ######## 이 값을 이용해서 로직 추가하기!!! 뺄떄 vel danger 인식 X ######  -> 안해도 될듯
-        self.isLeftComingClose = False
-        self.isRightComingCLose = False
-        #####################################################################
     
         self.preRightPosition = [0,0]
         self.preLeftPosition = [0,0]
@@ -165,14 +165,14 @@ class IntegratedSystem(Node):
 
             self.getHumanPosition()
             self.getPersonHeading()
-            self.judgeTilt()
 
+            self.calculateCost() # TODO 그리는거를 publish 이후로 옮기기
             self.punblish()
             ########### draw on frame ################
             
             self.drawOnFrame()
             # self.update_visualization()
-            self.calculateCost()
+            
             self.show_frame()
 
 
@@ -181,10 +181,6 @@ class IntegratedSystem(Node):
         else:
             self.get_logger().error('Failed to capture frame.')
 
-
-
-    import cv2
-    import numpy as np
 
     def draw_line_with_gradient(self,img, pt1, pt2, max_distance=100):
         # Drawing a basic line
@@ -219,16 +215,39 @@ class IntegratedSystem(Node):
         return img
     
     def calculateCost(self):
+
+        if not self.isInitializeCostDone:
+            self.CostFunction = SegmentCostFunction("exponential", 1.2)
+            # self.CostFunction = SegmentCostFunction_out0("exponential", 1.2)
+            self.CostFunction.setSigma(100)
+            self.PunchCost.initializeCostFunction(self.CostFunction)
+            self.isInitializeCostDone = True
         xAngleDiff = self.person_heading - 90
+        
         self.PunchCost.calculate_total_cost(self.humanPosition, self.center, self.leftPosition, self.rightPosition, xAngleDiff)
-        xMin, yMin = self.PunchCost.find_lowest_cost_point()
+        
+        # xMin, yMin = self.PunchCost.find_lowest_cost_point()
+        # xOptimal, yOptimal = self.OptimalAction.getOptimalAction(self.leftPosition, self.rightPosition, self.center)
+        
+        xOptimal, yOptimal = self.OptimalAction.getOptimalAction_use_currentPosition(self.leftPosition, self.rightPosition, self.center)
+        # self.OptimalAction.getOptimalAction_use_currentPosition()
+        self.SandbagPosition.updatePosition(xOptimal, yOptimal)
 
+        self.drawGrid()
+
+        
+
+
+    def drawGrid(self):
+        self.drawCurrentPosition()
         angle = np.radians(self.person_heading - 90)
-
+        
         colors = ["green", "red"]  # 초록에서 빨강으로
         cmap = LinearSegmentedColormap.from_list("cost_color_map", colors, N=256)
         norm = Normalize(vmin=0, vmax=2)  # 코스트 값의 예상 범위 설정
         scalar_map = ScalarMappable(norm=norm, cmap=cmap)
+        currentX, currentY = self.SandbagPosition.getPosition()
+
         for index, (x, y) in enumerate(zip(self.PunchCost.xMesh, self.PunchCost.yMesh)):
             cost_value = self.PunchCost.C_total[index]
             rgba_color = scalar_map.to_rgba(cost_value)
@@ -236,7 +255,7 @@ class IntegratedSystem(Node):
             transformed_point = self.CoordinateTransformer.transform(self.center, angle, [x, y])
             
             # Check if it is the minimum cost point
-            if x == xMin and y == yMin:
+            if x == currentX and y == currentY:
                 # Draw a larger red circle for the minimum cost point
                 self.draw_circle_on_frame(transformed_point, 10, (0, 255, 0), -1)  
                 text_color = (0, 0, 255)  # Red color for text in BGR format
@@ -250,7 +269,11 @@ class IntegratedSystem(Node):
             text_position = (int(transformed_point[0] + 10), int(transformed_point[1]))  # 텍스트 위치 조정 (원 옆)
             cv2.putText(self.frame, f"{cost_value:.2f}", text_position, font, font_size, text_color, 1, cv2.LINE_AA)
 
-
+    def drawCurrentPosition(self):
+        angle = np.radians(self.person_heading - 90)
+        currentX, currentY = self.SandbagPosition.getPosition()
+        transformed_point = self.CoordinateTransformer.transform(self.center, angle, [currentX, currentY])
+        self.draw_circle_on_frame(transformed_point, 10, (0, 255, 0), -1)
 
 
     def update_visualization(self):
@@ -275,7 +298,7 @@ class IntegratedSystem(Node):
 
         self.showIsPunch()
         # self.showDangerReason() # TODO tilt_2_0 update this method
-        self.showPunchVel()
+        # self.showPunchVel()
 
         # self.putTextOnFrame(f"isLeftComingCLose: {self.isLeftComingClose}", (50,300),1, (255,0,0))
         # self.putTextOnFrame(f"isRightComingCLose: {self.isRightComingClose}", (50,330),1, (255,0,0))
@@ -295,6 +318,8 @@ class IntegratedSystem(Node):
         self.draw_circle_on_frame(self.leftPosition,10,(0,255,0),2)
         self.draw_circle_on_frame(self.center,10,(0,0,255),2)
 
+        self.draw_circle_on_frame(self.center,self.OptimalAction.getSemicriticalDistance(),(0,0,255),2)
+
 
 
         # self.showHandPositions('right')
@@ -302,7 +327,7 @@ class IntegratedSystem(Node):
 
         # self.showPunchType()
         # print(f"main.drawOnFrame() -> np.around(self.Tilt.getRadius()), is {int(np.around(self.Tilt.getRadius()))}")
-        self.draw_circle_on_frame(self.center, int(np.around(self.Tilt.getRadius())), (0,0,255), 2)
+        # self.draw_circle_on_frame(self.center, int(np.around(self.Tilt.getRadius())), (0,0,255), 2)
         # self.showHitPoint()
 
         # self.putTextOnFrame(f"is Left Punch End: {self.Tilt.isLeftPunchEnd()}", (700,270),1, (255,0,0) )
@@ -311,37 +336,32 @@ class IntegratedSystem(Node):
 
 
     def punblish(self):
-        msg = Float64()
-        if self.optimal_action != None:
-            msg.data = float(self.optimal_action)
-            self.action_publisher.publish(msg)
-        elif self.optimal_action == None:
-            self.optimal_action = float(1000.0)
-            msg.data = float(self.optimal_action)
-            self.action_publisher.publish(msg)
+        # Float64MultiArray 메시지 인스턴스 생성
+        msg = Float64MultiArray()
+        optimal_action = self.SandbagPosition.getPosition()
+        if optimal_action is not None:
+            # optimal_action이 (x, y) 튜플인 경우, 데이터 필드에 할당
+            msg.data = [float(optimal_action[0]), float(optimal_action[1])]
+        else:
+            # optimal_action이 None인 경우, 기본값으로 (1000.0, 1000.0) 설정
+            optimal_action = (1000.0, 1000.0)
+            msg.data = [float(optimal_action[0]), float(optimal_action[1])]
+        
+        # 액션 데이터 전송
+        self.action_publisher.publish(msg)
+
+
+        if not self.isMaxLengthSend:
+            maxLength_msg = Float64()
+            maxLength_msg.data = float(self.PunchCost.maxLength)
+            self.maxLength_publisher.publish(maxLength_msg)
+            self.isMaxLengthSend = True
 
 
         heading_msg = Float64()
         heading_msg.data = float(np.deg2rad(self.relative_heading))
         # print(self.relative_heading)
         self.relative_heading_publisher.publish(heading_msg)
-
-
-    def showHitPoint(self):
-        leftHitPoint = self.Tilt.returnHitPoint()[0]
-        rightHitPoint = self.Tilt.returnHitPoint()[1]
-        if leftHitPoint != None and leftHitPoint != 1000:
-            optimalAbsolute = self.calculateDegree(leftHitPoint)
-            sampleDistane = 100
-            optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
-            cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (0, 255, 50), -1)
-
-        if rightHitPoint != None and rightHitPoint != 1000:
-            optimalAbsolute = self.calculateDegree(rightHitPoint)
-            sampleDistane = 100
-            optimalCoordinate = [self.center[0] - sampleDistane * math.cos(optimalAbsolute), self.center[1] - sampleDistane * math.sin(optimalAbsolute)]
-            cv2.circle(self.frame, (int(optimalCoordinate[0]), int(optimalCoordinate[1])), 15, (255, 0, 0), -1)
-
 
 
     def showHandPositions(self, hand):
@@ -430,24 +450,6 @@ class IntegratedSystem(Node):
         self.isLeftComingClose = True if np.dot(leftVector, self.leftHeadingVector) > 0 else False
         self.isRightComingClose = True if np.dot(rightVector, self.rightHeadingVector) > 0 else False
 
-    def judgeTilt(self):
-        self.isPunchComingClose()
-        currentTime = time.time()
-        self.Tilt.initializeLeft(self.leftPosition, self.leftSpeed, self.leftDirection, self.left_heading, self.leftVelocity, currentTime)
-        self.Tilt.initializeRight(self.rightPosition, self.rightSpeed, self.rightDirection, self.right_heading, self.rightVelocity, currentTime)
-        self.Tilt.initializePersonHeading(self.person_heading)
-        self.Tilt.initializeCenter(self.center)
-        self.Tilt.initializePersonPosition(self.humanPosition)
-        self.Tilt.setPunchTypeDetector()
-
-        self.optimal_action = self.Tilt.detectPunch()
-        if self.optimal_action is None:
-            self.isPunch = False
-            # self.optimal_action = self.preOptimal_action
-        else:
-            self.isPunch = True
-        
-        # self.preOptimal_action = self.optimal_action
 
 
     def showPunchVel(self):
@@ -461,11 +463,6 @@ class IntegratedSystem(Node):
         self.putTextOnFrame(f"left Punch Type: {Left.getPunchType()}",(600,170),1.5,(0,255,0))
         self.putTextOnFrame(f"right Punch Type: {Right.getPunchType()}",(600,210),1.5,(0,255,0))
 
-    def showDangerReason(self):
-        if self.Tilt.isDistanceDanger():
-            self.putTextOnFrame("Distance Danger!!!!!!!",(50,100))
-        if self.Tilt.isVelDanger():
-            self.putTextOnFrame("Vel Danger!!!!!!!",(50,150))
 
     def calculateDegree(self, action):
         ## person heading에서 바꿀까????

@@ -5,7 +5,7 @@ from coordinateTransformer import CoordinateTransformer_nottilt_to_tilt
 from punchcostfunction import CostFunction
 
 class PunchCost:
-    def __init__(self, sigma=10.0, grid_size=10):
+    def __init__(self, sigma=100.0, grid_size=10):
         # self.initialize_positions(x_h, y_h, x_fl, y_fl, x_fr, y_fr)
         self.sigma = sigma
         self.grid_size = grid_size
@@ -28,26 +28,42 @@ class PunchCost:
         
         self.CoordinateTransformer_nottilt_to_tilt = CoordinateTransformer_nottilt_to_tilt()
         self.CostFunction = None
-        self.cost_map = {}
 
-    def getMaxLength(self):
-        return self.maxLength
-
-    def getMeshSize(self):
-        print(f"punchcost class -> self.xMesh.size is: {self.xMesh.size}")
-        return self.xMesh.size
-
-    def initialize_cost_map(self, C_total):
-        # Fill the cost map with coordinates and costs
-        for i in range(len(self.xMesh)):
-            self.cost_map[(self.xMesh[i], self.yMesh[i])] = C_total[i]
 
     def initializeCostFunction(self, CostFunction: CostFunction):
         self.CostFunction = CostFunction
+
+
+    def perpendicular_distance(self, x1, y1, x2, y2, X, Y):
+        # numerator = np.abs((y2 - y1) * X - (x2 - x1) * Y + x2 * y1 - y2 * x1)
+        numerator = self.point_to_segment_distance(x1, y1, x2, y2, X, Y)
+        # denominator = np.sqrt((y2 - y1)**2 + (x2 - x1)**2)
+        return numerator
+        # return numerator / denominator
     
+
+    def point_to_segment_distance(self, x1, y1, x2, y2, X, Y):
+        dx = x2 - x1
+        dy = y2 - y1
+        d_squared = dx*dx + dy*dy  # 선분 길이의 제곱
+        p_dx = X - x1
+        p_dy = Y - y1
+        if d_squared == 0:
+            # 선분의 시작점과 끝점이 같은 경우
+            return np.sqrt(p_dx**2 + p_dy**2)
+        
+        # 점의 선분 위 투영 위치 계산
+        t = (p_dx * dx + p_dy * dy) / d_squared
+        # 각 조건에 따른 가장 가까운 점 계산
+        closest_x = np.where(t < 0, x1, np.where(t > 1, x2, x1 + t * dx))
+        closest_y = np.where(t < 0, y1, np.where(t > 1, y2, y1 + t * dy))
+
+        # 투영점과 주어진 점 사이의 거리 계산
+        distance = np.sqrt((X - closest_x)**2 + (Y - closest_y)**2)
+        return distance
+
     
     def calculate_total_cost(self, humanCoordinate, centerCoordinate, leftCoordinate, rightCoordinate, xAxisAngleDiff):
-        assert self.CostFunction is not None, "CostFunction has not been initialized."
         # 받을때 이 좌표계로 변환해서 받기
         # xAxisAngleDiff: degree
         humanCoordinate = self.CoordinateTransformer_nottilt_to_tilt.transform(humanCoordinate, centerCoordinate, xAxisAngleDiff, 1)
@@ -55,77 +71,19 @@ class PunchCost:
         rightCoordinate = self.CoordinateTransformer_nottilt_to_tilt.transform(rightCoordinate, centerCoordinate, xAxisAngleDiff, 1)
         # print(f"puncostClass.calcualte_total_cost() -> humanCoordinate is: {humanCoordinate}")
         # print(f"puncostClass.calcualte_total_cost() -> leftCoordinate is: {leftCoordinate}")
-        self.CostFunction.initializePosition(humanCoordinate, leftCoordinate, rightCoordinate)
-        self.C_total = self.CostFunction.calculate(self.xMesh, self.yMesh)
-        self.initialize_cost_map(self.C_total)
-        return self.C_total
-    
-    # def get_cost_at_point(self, x, y):
-    #     """
-    #     Get the cost at a specific point (x, y).
-    #     Args:
-    #     x (float): The x-coordinate of the point.
-    #     y (float): The y-coordinate of the point.
-
-    #     Returns:
-    #     float: The cost at the point if the point is within the mesh grid; otherwise, returns None.
-    #     """
-    #     # Check if the point is within the xMesh and yMesh
-    #     try:
-    #         # Find the index of the closest values in xMesh and yMesh to the given x, y
-    #         x_idx = (np.abs(self.xMesh - x)).argmin()
-    #         y_idx = (np.abs(self.yMesh - y)).argmin()
-
-    #         # Check if the coordinates match exactly (or very close, considering numerical precision)
-    #         if np.isclose(self.xMesh[x_idx], x) and np.isclose(self.yMesh[y_idx], y):
-    #             # Retrieve and return the cost value at the found index
-    #             return self.C_total[x_idx, y_idx]
-    #         else:
-    #             return None
-    #     except ValueError:
-    #         # If x or y is out of the bounds of xMesh or yMesh
-    #         return None
-
-    # def get_cost_at_point(self, x, y):
-    #     # TODO 이 방식 말고 Hash table 이용해서 찾기
-    #     """
-    #     Get the cost at a specific point (x, y).
-    #     Args:
-    #     x (float): The x-coordinate of the point.
-    #     y (float): The y-coordinate of the point.
-
-    #     Returns:
-    #     float: The cost at the point if the point is within the mesh grid; otherwise, returns None.
-    #     """
-    #     # Compute the distance from each point in the mesh to the specified point (x, y)
-    #     distances = np.sqrt((self.xMesh - x)**2 + (self.yMesh - y)**2)
-    #     # Find the index of the minimum distance
-    #     min_idx = distances.argmin()
-
-    #     # Check if the closest point's coordinates are close enough to (x, y)
-    #     if np.isclose(self.xMesh[min_idx], x) and np.isclose(self.yMesh[min_idx], y):
-    #         # Retrieve and return the cost value at the found index
-    #         return self.C_total[min_idx]
-    #     else:
-    #         return None
         
-    def get_cost_at_point(self, x, y):
-        """
-        Get the cost at a specific point (x, y) by checking the hash table first,
-        and if not present, calculate it for that specific point.
-        """
-        point = (x, y)
-        try:
-            # First, try to retrieve the cost from the hash table
-            return self.cost_map[point]
-        except KeyError:
-            # If the point is not in the hash table, calculate the cost for this point
-            calculated_cost = self.CostFunction.calculate_point_cost(x, y)
-            # Update the hash table with the newly calculated cost
-            self.cost_map[point] = calculated_cost
-            return calculated_cost
-
-
+        self.x_h, self.y_h = humanCoordinate[0], humanCoordinate[1]
+        self.x_fl, self.y_fl = leftCoordinate[0], leftCoordinate[1]
+        self.x_fr, self.y_fr = rightCoordinate[0], rightCoordinate[1]
+        
+        distance_left = self.perpendicular_distance(self.x_h, self.y_h, self.x_fl, self.y_fl, self.xMesh, self.yMesh)
+        distance_right = self.perpendicular_distance(self.x_h, self.y_h, self.x_fr, self.y_fr, self.xMesh, self.yMesh)
+        
+        C_left = np.exp(-distance_left**2 / (2 * self.sigma**2))
+        C_right = np.exp(-distance_right**2 / (2 * self.sigma**2))
+        self.C_total = C_left + C_right
+        return C_left + C_right
+    
 
 
     def plot_cost_function(self):
@@ -154,18 +112,6 @@ class PunchCost:
     def find_lowest_cost_point(self):
         min_cost_index = np.unravel_index(np.argmin(self.C_total, axis=None), self.C_total.shape)
         return (self.xMesh[min_cost_index], self.yMesh[min_cost_index])
-    
-    def find_nth_lowest_cost_point(self, n):
-        if n > self.C_total.size:
-            raise ValueError("n is larger than the number of elements in the cost matrix")
-        
-        # C_total에서 n번째로 작은 값의 인덱스 찾기
-        # np.partition을 사용하여 n번째 값과 그보다 작은 값을 분할
-        # np.argpartition은 인덱스를 반환하므로, 이를 사용하여 위치를 찾을 수 있음
-        flattened_index = np.argpartition(self.C_total.ravel(), n-1)[n-1]
-        # unravel_index를 사용하여 1차원 인덱스를 2차원 인덱스로 변환
-        index = np.unravel_index(flattened_index, self.C_total.shape)
-        return (self.xMesh[index], self.yMesh[index])
 
 
 if __name__ == "__main__":

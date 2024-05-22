@@ -10,7 +10,7 @@ from human import HumanTracker
 from tilt_2_0 import Tilt
 from logPunch import PunchData
 from punch import Punch
-from punchcost import PunchCost
+from boxing_2_0_0.boxing_2_0_0.punchcost_old import PunchCost
 from coordinateTransformer import CoordinateTransformer
 
 import matplotlib.pyplot as plt
