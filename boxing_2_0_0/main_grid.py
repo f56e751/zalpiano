@@ -238,7 +238,7 @@ class IntegratedSystem(Node):
             # Check if it is the minimum cost point
             if x == xMin and y == yMin:
                 # Draw a larger red circle for the minimum cost point
-                self.draw_circle_on_frame(transformed_point, 6, (0, 255, 0), -1)  
+                self.draw_circle_on_frame(transformed_point, 10, (0, 255, 0), -1)  
                 text_color = (0, 0, 255)  # Red color for text in BGR format
                 font_size = 0.6  # Larger font size for minimum cost point
             else:

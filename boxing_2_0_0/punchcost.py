@@ -25,14 +25,37 @@ class PunchCost:
         self.xMesh = self.xMesh[circle_mask]
         self.yMesh = self.yMesh[circle_mask]
         
-        self.CoordinateTransformer = CoordinateTransformer()
         self.CoordinateTransformer_nottilt_to_tilt = CoordinateTransformer_nottilt_to_tilt()
 
     
     def perpendicular_distance(self, x1, y1, x2, y2, X, Y):
-        numerator = np.abs((y2 - y1) * X - (x2 - x1) * Y + x2 * y1 - y2 * x1)
-        denominator = np.sqrt((y2 - y1)**2 + (x2 - x1)**2)
-        return numerator / denominator
+        # numerator = np.abs((y2 - y1) * X - (x2 - x1) * Y + x2 * y1 - y2 * x1)
+        numerator = self.point_to_segment_distance(x1, y1, x2, y2, X, Y)
+        # denominator = np.sqrt((y2 - y1)**2 + (x2 - x1)**2)
+        return numerator
+        # return numerator / denominator
+    
+
+    def point_to_segment_distance(self, x1, y1, x2, y2, X, Y):
+        dx = x2 - x1
+        dy = y2 - y1
+        d_squared = dx*dx + dy*dy  # 선분 길이의 제곱
+        p_dx = X - x1
+        p_dy = Y - y1
+        if d_squared == 0:
+            # 선분의 시작점과 끝점이 같은 경우
+            return np.sqrt(p_dx**2 + p_dy**2)
+        
+        # 점의 선분 위 투영 위치 계산
+        t = (p_dx * dx + p_dy * dy) / d_squared
+        # 각 조건에 따른 가장 가까운 점 계산
+        closest_x = np.where(t < 0, x1, np.where(t > 1, x2, x1 + t * dx))
+        closest_y = np.where(t < 0, y1, np.where(t > 1, y2, y1 + t * dy))
+
+        # 투영점과 주어진 점 사이의 거리 계산
+        distance = np.sqrt((X - closest_x)**2 + (Y - closest_y)**2)
+        return distance
+
     
     def calculate_total_cost(self, humanCoordinate, centerCoordinate, leftCoordinate, rightCoordinate, xAxisAngleDiff):
         # 받을때 이 좌표계로 변환해서 받기
@@ -55,10 +78,38 @@ class PunchCost:
         self.C_total = C_left + C_right
         return C_left + C_right
     
+    # def calculate_total_cost(self, humanCoordinate, centerCoordinate, leftCoordinate, rightCoordinate, xAxisAngleDiff):
+    #     # Transforms and other setups are kept as before
+    #     humanCoordinate = self.CoordinateTransformer_nottilt_to_tilt.transform(humanCoordinate, centerCoordinate, xAxisAngleDiff, 1)
+    #     leftCoordinate  = self.CoordinateTransformer_nottilt_to_tilt.transform(leftCoordinate, centerCoordinate, xAxisAngleDiff, 1)
+    #     rightCoordinate = self.CoordinateTransformer_nottilt_to_tilt.transform(rightCoordinate, centerCoordinate, xAxisAngleDiff, 1)
+    #     # print(f"puncostClass.calcualte_total_cost() -> humanCoordinate is: {humanCoordinate}")
+    #     # print(f"puncostClass.calcualte_total_cost() -> leftCoordinate is: {leftCoordinate}")
+        
+    #     self.x_h, self.y_h = humanCoordinate[0], humanCoordinate[1]
+    #     self.x_fl, self.y_fl = leftCoordinate[0], leftCoordinate[1]
+    #     self.x_fr, self.y_fr = rightCoordinate[0], rightCoordinate[1]
+        
+    #     # 가정: circle_mask 가 적용되어 xMesh, yMesh 는 1차원 배열
+    #     # 원래의 그리드를 유지하면서 C_total 을 계산
+    #     C_total_full = np.zeros_like(self.xMesh, dtype=float)  # 전체 그리드 크기에 맞게 C_total 생성
+    #     for index in range(len(self.xMesh)):  # 필터링된 메쉬의 인덱스를 순회
+    #         x = self.xMesh[index]
+    #         y = self.yMesh[index]
+    #         distance_left = self.perpendicular_distance(self.x_h, self.y_h, self.x_fl, self.y_fl, x, y)
+    #         distance_right = self.perpendicular_distance(self.x_h, self.y_h, self.x_fr, self.y_fr, x, y)
+            
+    #         C_left = np.exp(-distance_left**2 / (2 * self.sigma**2))
+    #         C_right = np.exp(-distance_right**2 / (2 * self.sigma**2))
+    #         C_total_full[index] = C_left + C_right  # 필터링된 인덱스에 결과 저장
+
+    #     # 이제 원래 2차원 형태로 C_total 을 재구성해야 합니다
+    #     self.C_total = np.zeros((self.grid_size, self.grid_size))  # 원래 그리드 크기에 맞게 재구성
+    #     self.C_total[self.xMesh, self.yMesh] = C_total_full  # 적절한 인덱스에 값을 할당
+
+
+
     def plot_cost_function(self):
-
-
-
         plt.figure(figsize=(10, 8))
         plt.contourf(self.xMesh, self.yMesh, self.C_total, levels=50, cmap='viridis')
         plt.plot([self.x_h, self.x_fl], [self.y_h, self.y_fl], 'r-', linewidth=2)  # plot the vector for the left fist
