@@ -12,7 +12,7 @@ from punch import Punch
 from punchcost import PunchCost
 from coordinateTransformer import CoordinateTransformer
 from punchcostfunction import SegmentCostFunction, LineCostFunction, SegmentCostFunction_out0
-from sandbagPosition import SandbagPosition
+from point import Point
 from optimalAction import OptimalAction
 
 import matplotlib.pyplot as plt
@@ -85,7 +85,7 @@ class IntegratedSystem(Node):
         self.isInitializeCostDone = False
         self.CoordinateTransformer = CoordinateTransformer()
         self.CostFunction = None
-        self.SandbagPosition = SandbagPosition()
+        self.SandbagPosition = Point()
 
         criticalDistance = 200
         semiCriticalDistance = 250

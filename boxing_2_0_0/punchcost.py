@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 from coordinateTransformer import CoordinateTransformer
 from coordinateTransformer import CoordinateTransformer_nottilt_to_tilt
 from punchcostfunction import CostFunction
+from point import Point
 
 class PunchCost:
-    def __init__(self, sigma=10.0, grid_size=10):
+    def __init__(self, sigma=100.0, grid_size=11):
         # self.initialize_positions(x_h, y_h, x_fl, y_fl, x_fr, y_fr)
         self.sigma = sigma
         self.grid_size = grid_size
@@ -29,6 +30,43 @@ class PunchCost:
         self.CoordinateTransformer_nottilt_to_tilt = CoordinateTransformer_nottilt_to_tilt()
         self.CostFunction = None
         self.cost_map = {}
+    
+        distance_between_points = (2 * self.maxLength) / (self.grid_size - 1) if self.grid_size > 1 else self.maxLength
+        self.adjacentDistance = distance_between_points * np.sqrt(2) + 0.01
+
+        # self.points = []
+        self.points = {}
+        self.initializePoints()
+        
+    def getAdjacentDistance(self):
+        return self.adjacentDistance
+
+    # def initializePoints(self):
+    #     for i in range(len(self.xMesh)):
+    #         self.points.append(Point(self.xMesh[i], self.yMesh[i]))
+
+    #     # Check if (0,0) is already in points
+    #     isZeroInPoints = any(np.isclose(point.getPosition()[0], 0) and np.isclose(point.getPosition()[1], 0) for point in self.points)
+        
+    #     if not isZeroInPoints:
+    #         self.points.append(Point(0,0))
+
+    def initializePoints(self):
+        for x, y in zip(self.xMesh, self.yMesh):
+            point_key = (round(x, 2), round(y, 2))  # round to ensure consistent hashing
+            if point_key not in self.points:
+                self.points[point_key] = Point(x, y)
+
+        # Ensure (0,0) is always included in the points if not already present
+        zero_key = (0.0, 0.0)
+        if zero_key not in self.points:
+            self.points[zero_key] = Point(0, 0)
+
+    # def getPoints(self):
+    #     return self.points
+
+    def getPoints(self):
+        return self.points.values()
 
     def getMaxLength(self):
         return self.maxLength
@@ -110,6 +148,8 @@ class PunchCost:
     #         return None
         
     def get_cost_at_point(self, x, y):
+        # TODO 외부에서 불러올때 self.xMesh, self.yMesh에 있는 점들로 불러오기
+        # 여기 없으면 다시 계산해서 비효율적
         """
         Get the cost at a specific point (x, y) by checking the hash table first,
         and if not present, calculate it for that specific point.
@@ -120,6 +160,7 @@ class PunchCost:
             return self.cost_map[point]
         except KeyError:
             # If the point is not in the hash table, calculate the cost for this point
+            print("class PunchCost.get_cost_at_point() -> point not in points")
             calculated_cost = self.CostFunction.calculate_point_cost(x, y)
             # Update the hash table with the newly calculated cost
             self.cost_map[point] = calculated_cost
@@ -169,28 +210,27 @@ class PunchCost:
 
 
 if __name__ == "__main__":
-    # Create an instance of the class and use its methods
-    # punch_cost = PunchCost()
-    # punch_cost.plot_cost_function()
-    # lowest_cost_point = punch_cost.find_lowest_cost_point()
-    # print("Point with the lowest cost:", lowest_cost_point)
-
-
-    # 먼저 PunchCost 클래스를 정의해야 합니다. 위에서 이미 제공된 클래스를 사용합니다.
-    # 이제 테스트 코드를 작성합니다.
-
     # 인스턴스 생성
     punch_cost = PunchCost(sigma=20, grid_size=50)  # sigma 값과 grid 크기를 설정
-    punch_cost.calculate_total_cost([50,50],[100,100],[50,0],[0,50],0)
-    # 비용 함수를 시각화
-    punch_cost.plot_cost_function_3D()
-    punch_cost.plot_cost_function()
+    # punch_cost.calculate_total_cost([50,50],[100,100],[50,0],[0,50],0)
+    # # 비용 함수를 시각화
+    # punch_cost.plot_cost_function_3D()
+    # punch_cost.plot_cost_function()
 
-    # 비용이 가장 낮은 지점 찾기
-    lowest_cost_point = punch_cost.find_lowest_cost_point()
-    print("Point with the lowest cost:", lowest_cost_point)
-    print(punch_cost.C_total.shape)
+    # # 비용이 가장 낮은 지점 찾기
+    # lowest_cost_point = punch_cost.find_lowest_cost_point()
+    # print("Point with the lowest cost:", lowest_cost_point)
+    # print(punch_cost.C_total.shape)
 
-    # 이 코드는 matplotlib을 사용하여 비용 분포를 시각화합니다.
-    # 'viridis' 컬러맵을 사용하여 더 높은 비용은 더 밝은 색상으로, 낮은 비용은 어두운 색상으로 표시됩니다.
-    # 또한, 최소 비용 지점도 출력됩니다.
+
+
+    punch_cost = PunchCost()
+    points = punch_cost.getPoints()
+    count = 0
+    for point in points:
+        count += 1
+        print(point.getPosition())
+
+    print(count)
+
+    print(punch_cost.adjacentDistance)
