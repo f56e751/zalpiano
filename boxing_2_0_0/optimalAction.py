@@ -4,14 +4,14 @@ import numpy as np
 from pointGraph import Graph, Node
 
 class OptimalAction():
-    def __init__(self, PunchCost:PunchCost, SandbagPosition : Point, criticalDistance, semicriticalDistance):
+    def __init__(self, PunchCost:PunchCost, criticalDistance, semicriticalDistance):
         self.Punchcost = PunchCost
         self.criticalDistance = criticalDistance
         self.semicriticalDistance = semicriticalDistance
-        self.SandbagPosition = SandbagPosition
+        self.SandbagPosition = None
         self.count = 0
         self.criticalCost = 0.2
-        self.Graph = Graph(self.Punchcost)
+        self.Graph = Graph(self.Punchcost, self.criticalCost)
         self.initializeGraph()
 
     # def getOptimalAction(self, leftCoordinate, rightCoordinate, centerCoordinate):
@@ -34,6 +34,9 @@ class OptimalAction():
         for point in self.Punchcost.getPoints():
             node = Node(point)
             self.Graph.insertNode(node)
+
+    def initializeSandbagPosition(self, SandbagPosition):
+        self.SandbagPosition = SandbagPosition
             
     
     def getSemicriticalDistance(self):
@@ -63,6 +66,50 @@ class OptimalAction():
 
 
 
+    # def getOptimalAction_use_currentPosition(self, leftCoordinate, rightCoordinate, centerCoordinate):
+    #     leftDistance = np.sqrt((leftCoordinate[0] - centerCoordinate[0])**2 + (leftCoordinate[1] - centerCoordinate[1])**2)
+    #     rightDistance = np.sqrt((rightCoordinate[0] - centerCoordinate[0])**2 + (rightCoordinate[1] - centerCoordinate[1])**2)
+        
+    #     closeDistance = leftDistance if leftDistance < rightDistance else rightDistance
+    #     if closeDistance >= self.semicriticalDistance:
+    #         # print(f"position 0 {self.count} times")
+    #         self.count += 1
+    #         return (0,0)
+        
+    #     currentPosition = self.SandbagPosition.getPosition()
+    #     currentCost = self.Punchcost.get_cost_at_point(currentPosition[0], currentPosition[1])
+
+    #     if currentCost == None:
+    #         return (0,0)
+
+    #     if currentCost > self.criticalCost:
+    #         # Find the point with the lowest cost that is closer than the current position
+    #         min_cost = float('inf')
+    #         min_pos = None
+    #         min_distance = float('inf')
+
+    #         # Iterate over all mesh points to find the optimal one
+    #         for idx in range(self.Punchcost.xMesh.size):
+    #             x, y = self.Punchcost.xMesh[idx], self.Punchcost.yMesh[idx]
+    #             cost = self.Punchcost.C_total[idx]
+    #             distance = np.sqrt((x - currentPosition[0])**2 + (y - currentPosition[1])**2)
+
+    #             # Check if this point has a lower cost and is closer than any previously considered point
+    #             if cost < min_cost or (cost == min_cost and distance < min_distance):
+    #                 min_cost = cost
+    #                 min_pos = (x, y)
+    #                 min_distance = distance
+
+    #         if min_pos:
+    #             return min_pos
+    #         else:
+    #             # No suitable position found, maybe stay in place or handle differently
+    #             return currentPosition
+    #     else:
+    #         # If the current cost is not critical, no movement needed
+    #         return currentPosition
+
+
     def getOptimalAction_use_currentPosition(self, leftCoordinate, rightCoordinate, centerCoordinate):
         leftDistance = np.sqrt((leftCoordinate[0] - centerCoordinate[0])**2 + (leftCoordinate[1] - centerCoordinate[1])**2)
         rightDistance = np.sqrt((rightCoordinate[0] - centerCoordinate[0])**2 + (rightCoordinate[1] - centerCoordinate[1])**2)
@@ -73,10 +120,8 @@ class OptimalAction():
             self.count += 1
             return (0,0)
         
-    
-
         currentPosition = self.SandbagPosition.getPosition()
-        currentCost = self.Punchcost.get_cost_at_point(currentPosition[0], currentPosition[1])
+        currentCost = self.Punchcost.get_cost_at_point(self.SandbagPosition)
 
         if currentCost == None:
             return (0,0)
@@ -117,10 +162,23 @@ class OptimalAction():
         self.Graph.updateCost()
         # TODO SandbagPoint를 
         if closeDistance > self.semicriticalDistance:
-            return (0,0)
+            # TODO  이 부분 디버깅하기
+            return self.Punchcost.getOriginalPoint()
         
-        if self.SandbagPosition.getPosition()
+        # Point = self.Punchcost.getPoint(self.SandbagPosition.getPosition())
+        # TODO self.Punchcost.getPoint(self.SandbagPosition.getPosition()) 이 부분에서 잘 return되는지 디버깅 필요
+     
+        # TODO pointKey = self.SandbagPosition.getPosition() 이 부분 디버깅하기
+        currentNode = self.Graph.getNode(self.SandbagPosition)
+
+        if self.Graph.getMaxCost() < self.criticalCost:
+            return self.Punchcost.getOriginalPoint()
         
+        elif currentNode.getCost() > self.criticalCost:
+            return self.Graph.moveNextNode_case_currentNodeCost_higher_than_criticalCost(currentNode)
+        else:
+            return self.Graph.moveNextNode_case_currentNodeCost_lower_than_criticalCost(currentNode)
+
 
         
 

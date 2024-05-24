@@ -8,17 +8,20 @@ class Node():
         if not isinstance(point, Point):
             raise TypeError("point is not an instance of SandbagPosition")
         self.point = point
-        self.adjacent = []
+        self.adjacentNodes = []
         self.cost = 0
 
     def getPoint(self):
         return self.point
 
     def getAdjacentNode(self):
-        return self.adjacent
+        return self.adjacentNodes
     
-    def isCostHigh(self, criticalCost):
+    def isCostHigherThanCriticalCost(self, criticalCost):
         return self.cost > criticalCost
+    
+    def isCostHigherThanOtherNode(self, node):
+        return self.cost > node.getCost()
     
     def updateCost(self, cost):
         self.cost = cost
@@ -27,20 +30,67 @@ class Node():
         if not isinstance(node, Node):
             raise TypeError("The provided object is not an instance of Node.")
         
-        if node not in self.adjacent:
-            self.adjacent.append(node)
+        if node not in self.adjacentNodes:
+            self.adjacentNodes.append(node)
+    
+    # def findMinNodeHigherThanCriticalCost(self, criticalCost):
+    #     # return Node cost has to be smaller than this node cost
+    #     for adjacentNode in self.adjacentNodes:
+
+
+    # def findMaxNodeLowerThanCriticalCost(self, criticalCost):
+    #     # return Node cost has to be larger than this node cost
+
+    def findMinNodeHigherThanCriticalCost(self, criticalCost):
+        # Initialize with None and infinity to help find the minimum cost node above critical cost
+        # return 값이 None이면 재귀함수 종료
+        minNode = None
+        minCost = float('inf')
+        for adjacentNode in self.adjacentNodes:
+            if adjacentNode.cost > criticalCost and adjacentNode.cost < minCost:
+                minCost = adjacentNode.cost
+                minNode = adjacentNode
+        return minNode
+
+    def findMaxNodeLowerThanCriticalCost(self, criticalCost):
+        # Initialize with None and negative infinity to help find the maximum cost node below critical cost
+        maxNode = None
+        maxCost = float('-inf')
+        for adjacentNode in self.adjacentNodes:
+            if adjacentNode.cost < criticalCost and adjacentNode.cost > maxCost:
+                maxCost = adjacentNode.cost
+                maxNode = adjacentNode
+        return maxNode
+
+    def getCost(self):
+        return self.cost
 
 class Graph():
-    def __init__(self, PunchCost: PunchCost):
+    def __init__(self, PunchCost: PunchCost, criticalCost):
         self.adjacentDistance = None
         self.nodes = {}  # Using a dictionary to store nodes
         self.PunchCost = PunchCost
+        self.criticalCost = criticalCost
+        self.maxCost = 0
 
     def initializeAdjacentDistance(self, adjacentDistance):
         self.adjacentDistance = adjacentDistance
 
-    def insertNode(self, node):
-        point_key = node.getPoint().getPosition()  # Use the position as the key
+    # def insertNode(self, node: Node):
+    #     point_key = node.getPoint().getPosition()  # Use the position as the key
+    #     if point_key not in self.nodes:
+    #         self.nodes[point_key] = node
+
+    #     for other_key, other_node in self.nodes.items():
+    #         if other_key != point_key:
+    #             distance = self.getNodeDistance(node, other_node)
+    #             if distance < self.adjacentDistance:
+    #                 node.updateAdjacentNode(other_node)
+    #                 other_node.updateAdjacentNode(node)
+
+
+    def insertNode(self, node: Node):
+        point_key = node.getPoint()  # Use the position as the key
         if point_key not in self.nodes:
             self.nodes[point_key] = node
 
@@ -50,16 +100,165 @@ class Graph():
                 if distance < self.adjacentDistance:
                     node.updateAdjacentNode(other_node)
                     other_node.updateAdjacentNode(node)
+
+    # def moveNextNode(self, node: Node):
+    #     # 펀치가 날라와서 근처 코스트가 높아지는 경우
+    #         # 현재 노드에서 인접한 노드 중에서 코스트가 제일 낮은 곳으로 감, 대신 이동 시 해당 노드의 코스트가 criticalCost를 넘으면 안됨 
+    #     # 펀치가 빠지면서 근처 코스트가 낮아져서 
+    #         # 현재 노드의 코스트가 criticalCost보다 낮아지면 현재 노드와 인접한 노드 중에서 가장 코스트가 높은 곳으로 복귀함
+    #         # 이동하는 노드의 코스트가 criticalCost보다 높으면 안됨
+    #             # 만약 모든 노드의 코스트가 criticalCost보다 낮다먄 원점으로 복귀
+    #                 # 이거는 어떻게 알까?
+    #                 # 노드의 max cost를 따로 관리하기 -> 노드 전체 코스트 계산 시 저장하면 될듯
+    #     if self.maxCost < 0.2:
+    #         # TODO self.getNode((0,0)) 이거 잘 되는지 디버깅
+    #         return self.getNode((0,0))
+        
+    #     adjacentNodes = node.getAdjacentNode()
+    #     # 재귀로 작성하기
+    #     if node.getCost() > self.criticalCost:
+    #         for adjacentNode in adjacentNodes:
+
+
+    # def moveNextNode_case_currentNodeCost_higher_than_criticalCost(self, node: Node):
+    #     if self.maxCost < 0.2:
+    #         # TODO self.getNode((0,0)) 이거 잘 되는지 디버깅
+    #         return self.getNode((0,0))
+
+        
+
+
+    # def moveNextNode_case_currentNodeCost_lower_than_criticalCost(self, node: Node):
+    #     if self.maxCost < 0.2:
+    #         # TODO self.getNode((0,0)) 이거 잘 되는지 디버깅
+    #         return self.getNode((0,0))
+        
+
+    # def moveNextNode_case_currentNodeCost_higher_than_criticalCost(self, node: Node, visited=None):
+    #     if visited is None:
+    #         visited = set()
+
+    #     visited.add(node)
+    #     if node.getCost() <= self.criticalCost:
+    #         return node  # Found a node with cost lower than critical
+
+    #     minNode = None
+    #     minCost = float('inf')
+    #     for adjNode in node.getAdjacentNode():
+    #         print(adjNode)
+    #         if adjNode not in visited and adjNode.getCost() > self.criticalCost:
+    #             if adjNode.getCost() < minCost:
+    #                 candidate = self.moveNextNode_case_currentNodeCost_higher_than_criticalCost(adjNode, visited)
+    #                 if candidate and candidate.getCost() < minCost:
+    #                     minCost = candidate.getCost()
+    #                     minNode = candidate
+
+    #     return minNode if minNode else None  # Return the node found or None if no suitable node exists
+
+    # def moveNextNode_case_currentNodeCost_lower_than_criticalCost(self, node: Node, visited=None):
+    #     if visited is None:
+    #         visited = set()
+
+    #     visited.add(node)
+    #     if node.getCost() > self.criticalCost:
+    #         return node  # Found a node with cost higher than critical
+
+    #     maxNode = None
+    #     maxCost = float('-inf')
+    #     for adjNode in node.getAdjacentNode():
+    #         print(adjNode)
+    #         if adjNode not in visited and adjNode.getCost() < self.criticalCost:
+    #             if adjNode.getCost() > maxCost:
+    #                 candidate = self.moveNextNode_case_currentNodeCost_lower_than_criticalCost(adjNode, visited)
+    #                 if candidate and candidate.getCost() > maxCost:
+    #                     maxCost = candidate.getCost()
+    #                     maxNode = candidate
+
+    #     return maxNode if maxNode else None  # Return the node found or None if no suitable node exists
+
+    def moveNextNode_case_currentNodeCost_higher_than_criticalCost(self, node: Node, visited=None):
+        # 전부 다 critical값을 넘으면 주변으로 피하는 로직 추가
+        if visited is None:
+            visited = set()
+
+        visited.add(node)
+        if node.getCost() <= self.criticalCost:
+            return node.getPoint()  # Found a node with cost lower than critical
+
+        minNode = None
+        minNode = self.findMin(node.getCost(), node.getAdjacentNode())
+        if minNode == None:
+            return node.getPoint()
+        
+        while minNode.getCost() > self.criticalCost:
+            currentNode = minNode
+            minNode = self.findMin(currentNode.getCost(), currentNode.getAdjacentNode())
+            if minNode == None:
+                return currentNode.getPoint()
+            
+        return minNode.getPoint()
+
+
+    def findMin(self, currentCost, adjNodes):
+        minCost = float('inf')
+        minNode = None
+        for adjNode in adjNodes:
+            adjCost = adjNode.getCost()
+            if adjCost < minCost and adjCost < currentCost:
+                minCost = adjCost
+                minNode = adjNode
+        return minNode
+    
+
+    def findMax(self, currentCost, adjNodes):
+        maxCost = - float('inf')
+        maxNode = None
+        for adjNode in adjNodes:
+            adjCost = adjNode.getCost()
+            if adjCost > maxCost and adjCost > currentCost:
+                maxCost = adjCost
+                maxNode = adjNode
+        return maxNode
+
+
+    def moveNextNode_case_currentNodeCost_lower_than_criticalCost(self, node: Node, visited=None):
+        if visited is None:
+            visited = set()
+
+        visited.add(node)
+        if node.getCost() >= self.criticalCost:
+            return node.getPoint()  # Found a node with cost lower than critical
+
+        maxNode = None
+        maxNode = self.findMax(node.getCost(), node.getAdjacentNode())
+        if maxNode == None:
+            return node.getPoint()
+        
+        while maxNode.getCost() < self.criticalCost:
+            currentNode = maxNode
+            maxNode = self.findMax(currentNode.getCost(), currentNode.getAdjacentNode())
+            if maxNode == None:
+                return currentNode.getPoint()
+
+        return maxNode.getPoint()
+
+
+
+    def getNode(self, pointKey: Point):
+        return self.nodes[pointKey]
     
     def updateCostSingle(self, node, cost):
-        point_key = node.getPoint().getPosition()
+        point_key = node.getPoint()
         assert point_key in self.nodes, 'Node not in Graph'
         self.nodes[point_key].updateCost(cost)
     
     def updateCost(self):
+        self.maxCost = 0
         for point_key, node in self.nodes.items():
-            cost = self.PunchCost.get_cost_at_point(*point_key)  # Unpack the position tuple
+            cost = self.PunchCost.get_cost_at_point(point_key) 
             node.updateCost(cost)
+            if cost > self.maxCost:
+                self.maxCost = cost
 
     def getCostAtPoint(self, point):
         # Return the cost of the node at a specific point (constant time lookup)
@@ -82,7 +281,7 @@ class Graph():
     def plot_graph(self):
         fig, ax = plt.subplots()
         for key, node in self.nodes.items():
-            x, y = key
+            x, y = key.getPosition()
             ax.scatter(x, y, color='blue')
             for adj in node.getAdjacentNode():
                 adj_x, adj_y = adj.getPoint().getPosition()
@@ -96,6 +295,9 @@ class Graph():
 
     def getSize(self):
         return len(self.nodes)
+    
+    def getMaxCost(self):
+        return self.maxCost
 
 
 # class Graph():

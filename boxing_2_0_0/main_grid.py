@@ -89,7 +89,7 @@ class IntegratedSystem(Node):
 
         criticalDistance = 200
         semiCriticalDistance = 250
-        self.OptimalAction = OptimalAction(self.PunchCost, self.SandbagPosition, criticalDistance, semiCriticalDistance)
+        self.OptimalAction = OptimalAction(self.PunchCost, criticalDistance, semiCriticalDistance)
 
 
         
@@ -222,6 +222,8 @@ class IntegratedSystem(Node):
             self.CostFunction.setSigma(100)
             self.PunchCost.initializeCostFunction(self.CostFunction)
             self.isInitializeCostDone = True
+            self.SandbagPosition = self.PunchCost.getOriginalPoint()
+            self.OptimalAction.initializeSandbagPosition(self.SandbagPosition)
         xAngleDiff = self.person_heading - 90
         
         self.PunchCost.calculate_total_cost(self.humanPosition, self.center, self.leftPosition, self.rightPosition, xAngleDiff)
@@ -229,9 +231,9 @@ class IntegratedSystem(Node):
         # xMin, yMin = self.PunchCost.find_lowest_cost_point()
         # xOptimal, yOptimal = self.OptimalAction.getOptimalAction(self.leftPosition, self.rightPosition, self.center)
         
-        xOptimal, yOptimal = self.OptimalAction.getOptimalAction_use_currentPosition(self.leftPosition, self.rightPosition, self.center)
+        self.SandbagPosition = self.OptimalAction.getOptimalAction_Graph(self.leftPosition, self.rightPosition, self.center)
         # self.OptimalAction.getOptimalAction_use_currentPosition()
-        self.SandbagPosition.updatePosition(xOptimal, yOptimal)
+        
 
         self.drawGrid()
 
