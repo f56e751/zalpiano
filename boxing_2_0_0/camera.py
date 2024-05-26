@@ -46,4 +46,4 @@ class Camera():
 if __name__ == "__main__":
     Camera = Camera()
     Camera.setFps(120)
-    Camera.setFrame(640,400)
+    Camera.setFrame(1280,800)

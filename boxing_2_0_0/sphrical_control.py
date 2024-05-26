@@ -79,8 +79,10 @@ class ODriveNode(Node):
         self.person_heading_subscriber = self.create_subscription(Float64, 'person_heading', self.person_heading_callback, 10)
         self.maxLength_subscriber = self.create_subscription(Float64, 'maxLength', self.maxLength_callback, 10)
 
+        maximumPhi = np.deg2rad(25)
+        maximumLength = 100
 
-        self.control_rotation = ControlRotation(fixed_radius=1.0)  # Example fixed radius value
+        self.control_rotation = ControlRotation(maximumPhi, maximumLength)  # Example fixed radius value
         self.current_person_heading = 0  # Initialize person heading
 
         self.timer_period = 0.1

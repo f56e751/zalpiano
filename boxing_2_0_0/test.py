@@ -1,7 +1,7 @@
 import unittest
 from point import Point
 from punchcost import PunchCost
-from pointGraph import Graph, Node
+from boxing_2_0_0.boxing_2_0_0.graphnode import Graph, Node
 from optimalAction import OptimalAction
 import numpy as np
 

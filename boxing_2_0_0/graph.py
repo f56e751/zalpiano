@@ -1,69 +1,8 @@
-from point import Point
+from punchcost import PunchCost
+from graphnode import Node
 import numpy as np
 import matplotlib.pyplot as plt
-from punchcost import PunchCost
-
-class Node():
-    def __init__(self, point: Point):
-        if not isinstance(point, Point):
-            raise TypeError("point is not an instance of SandbagPosition")
-        self.point = point
-        self.adjacentNodes = []
-        self.cost = 0
-
-    def getPoint(self):
-        return self.point
-
-    def getAdjacentNode(self):
-        return self.adjacentNodes
-    
-    def isCostHigherThanCriticalCost(self, criticalCost):
-        return self.cost > criticalCost
-    
-    def isCostHigherThanOtherNode(self, node):
-        return self.cost > node.getCost()
-    
-    def updateCost(self, cost):
-        self.cost = cost
-    
-    def updateAdjacentNode(self, node):
-        if not isinstance(node, Node):
-            raise TypeError("The provided object is not an instance of Node.")
-        
-        if node not in self.adjacentNodes:
-            self.adjacentNodes.append(node)
-    
-    # def findMinNodeHigherThanCriticalCost(self, criticalCost):
-    #     # return Node cost has to be smaller than this node cost
-    #     for adjacentNode in self.adjacentNodes:
-
-
-    # def findMaxNodeLowerThanCriticalCost(self, criticalCost):
-    #     # return Node cost has to be larger than this node cost
-
-    def findMinNodeHigherThanCriticalCost(self, criticalCost):
-        # Initialize with None and infinity to help find the minimum cost node above critical cost
-        # return 값이 None이면 재귀함수 종료
-        minNode = None
-        minCost = float('inf')
-        for adjacentNode in self.adjacentNodes:
-            if adjacentNode.cost > criticalCost and adjacentNode.cost < minCost:
-                minCost = adjacentNode.cost
-                minNode = adjacentNode
-        return minNode
-
-    def findMaxNodeLowerThanCriticalCost(self, criticalCost):
-        # Initialize with None and negative infinity to help find the maximum cost node below critical cost
-        maxNode = None
-        maxCost = float('-inf')
-        for adjacentNode in self.adjacentNodes:
-            if adjacentNode.cost < criticalCost and adjacentNode.cost > maxCost:
-                maxCost = adjacentNode.cost
-                maxNode = adjacentNode
-        return maxNode
-
-    def getCost(self):
-        return self.cost
+from point import Point
 
 class Graph():
     def __init__(self, PunchCost: PunchCost, criticalCost):
@@ -93,6 +32,7 @@ class Graph():
         point_key = node.getPoint()  # Use the position as the key
         if point_key not in self.nodes:
             self.nodes[point_key] = node
+            # print(f"graph.py -> node point is {node.getPoint().getPosition()}")
 
         for other_key, other_node in self.nodes.items():
             if other_key != point_key:
@@ -187,7 +127,9 @@ class Graph():
 
         minNode = None
         minNode = self.findMin(node.getCost(), node.getAdjacentNode())
+        # print(f"minNode point is {minNode.getPoint().getPosition()}")
         if minNode == None:
+            # print(f"node point is {node.getPoint().getPosition()}")
             return node.getPoint()
         
         while minNode.getCost() > self.criticalCost:
@@ -196,6 +138,8 @@ class Graph():
             if minNode == None:
                 return currentNode.getPoint()
             
+
+        # print(f"minNode point is {minNode.getPoint().getPosition()}")
         return minNode.getPoint()
 
 

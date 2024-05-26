@@ -8,7 +8,7 @@ from punchcostfunction import SegmentCostFunction, LineCostFunction, SegmentCost
 
 
 class PunchCost:
-    def __init__(self, sigma=100.0, grid_size=11):
+    def __init__(self, sigma=50.0, grid_size=11):
         # self.initialize_positions(x_h, y_h, x_fl, y_fl, x_fr, y_fr)
         self.sigma = sigma
         self.grid_size = grid_size

@@ -1,7 +1,8 @@
 from punchcost import PunchCost
 from point import Point
 import numpy as np
-from pointGraph import Graph, Node
+from graphnode import Node
+from graph import Graph
 
 class OptimalAction():
     def __init__(self, PunchCost:PunchCost, criticalDistance, semicriticalDistance):
@@ -154,7 +155,7 @@ class OptimalAction():
             return currentPosition
         
 
-    def getOptimalAction_Graph(self, leftCoordinate, rightCoordinate, centerCoordinate):
+    def getOptimalAction_Graph(self, leftCoordinate, rightCoordinate, centerCoordinate, sandbagposition):
         leftDistance = np.sqrt((leftCoordinate[0] - centerCoordinate[0])**2 + (leftCoordinate[1] - centerCoordinate[1])**2)
         rightDistance = np.sqrt((rightCoordinate[0] - centerCoordinate[0])**2 + (rightCoordinate[1] - centerCoordinate[1])**2)
         closeDistance = leftDistance if leftDistance < rightDistance else rightDistance
@@ -162,6 +163,7 @@ class OptimalAction():
         self.Graph.updateCost()
         # TODO SandbagPoint를 
         if closeDistance > self.semicriticalDistance:
+            # print("optimalActionClass -> closeDistance > self.semicriticalDistance")
             # TODO  이 부분 디버깅하기
             return self.Punchcost.getOriginalPoint()
         
@@ -169,9 +171,12 @@ class OptimalAction():
         # TODO self.Punchcost.getPoint(self.SandbagPosition.getPosition()) 이 부분에서 잘 return되는지 디버깅 필요
      
         # TODO pointKey = self.SandbagPosition.getPosition() 이 부분 디버깅하기
-        currentNode = self.Graph.getNode(self.SandbagPosition)
+        currentNode = self.Graph.getNode(sandbagposition)
+        # print(f"currentNode position is {currentNode.getPoint().getPosition()}")
+        
 
         if self.Graph.getMaxCost() < self.criticalCost:
+            # print("optimalActionClass -> max cost lower than critical cost")
             return self.Punchcost.getOriginalPoint()
         
         elif currentNode.getCost() > self.criticalCost:

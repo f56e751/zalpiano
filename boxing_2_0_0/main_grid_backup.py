@@ -14,7 +14,7 @@ from coordinateTransformer import CoordinateTransformer
 from punchcostfunction import SegmentCostFunction, LineCostFunction, SegmentCostFunction_out0, OppositeSideMaxCostFunction
 from point import Point
 from optimalAction import OptimalAction
-from controlRotation import ControlRotation
+
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, Normalize
@@ -37,7 +37,6 @@ from std_msgs.msg import Float32, Float32MultiArray
 import time
 import math
 
-from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
 ##### at initail frame, solve the problem when only 1 or 2 aruco is visible (no error)
 
@@ -56,20 +55,12 @@ class IntegratedSystem(Node):
 
 
         super().__init__('integrated_system')
-        
-        qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
-            durability=DurabilityPolicy.TRANSIENT_LOCAL,
-            history=HistoryPolicy.KEEP_LAST,
-            depth=1
-        )
-        
         timer_period = 0.005  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
-        self.action_publisher = self.create_publisher(Float32MultiArray, 'optimal_action', qos_profile)
-        # self.relative_heading_publisher = self.create_publisher(Float32, 'relative_heading', qos_profile)
-        # self.maxLength_publisher = self.create_publisher(Float32, 'maxLength', qos_profile)
+        self.action_publisher = self.create_publisher(Float32MultiArray, 'optimal_action', 1)
+        self.relative_heading_publisher = self.create_publisher(Float32, 'relative_heading', 1)
+        self.maxLength_publisher = self.create_publisher(Float32, 'maxLength', 1)
 
         self.isMaxLengthSend = False
         ###### camera setting #############
@@ -96,11 +87,6 @@ class IntegratedSystem(Node):
         self.CoordinateTransformer = CoordinateTransformer()
         self.CostFunction = None
         self.SandbagPosition = Point()
-
-        maximumPhi = np.deg2rad(25)
-        maximumLength = 100
-
-        self.ControlRotation = ControlRotation(maximumPhi, maximumLength)
 
         criticalDistance = 200
         semiCriticalDistance = 250
@@ -184,7 +170,7 @@ class IntegratedSystem(Node):
             self.getHumanPosition()
             self.getPersonHeading()
 
-            self.calculateCost() # TODO ê·¸ë¦¬ëŠ”ê±°ë¥¼ publish ì´í›„ë¡œ ì˜®ê¸°ê¸°
+            self.calculateCost() # TODO 그리는거를 publish 이후로 옮기기
             self.punblish()
             ########### draw on frame ################
             
@@ -196,7 +182,7 @@ class IntegratedSystem(Node):
             self.show_frame()
 
 
-            ###  ì´ì œ headingì— ë”°ë¼ í”¼í•˜ëŠ” ë¡œì§ ì¶”ê°€
+            ###  이제 heading에 따라 피하는 로직 추가
 
         else:
             self.get_logger().error('Failed to capture frame.')
@@ -271,9 +257,9 @@ class IntegratedSystem(Node):
         self.drawCurrentPosition()
         angle = np.radians(self.person_heading - 90)
         
-        colors = ["green", "red"]  # ì´ˆë¡ì—ì„œ ë¹¨ê°•ìœ¼ë¡œ
+        colors = ["green", "red"]  # 초록에서 빨강으로
         cmap = LinearSegmentedColormap.from_list("cost_color_map", colors, N=256)
-        norm = Normalize(vmin=0, vmax=2)  # ì½”ìŠ¤íŠ¸ ê°’ì˜ ì˜ˆìƒ ë²”ìœ„ ì„¤ì •
+        norm = Normalize(vmin=0, vmax=2)  # 코스트 값의 예상 범위 설정
         scalar_map = ScalarMappable(norm=norm, cmap=cmap)
         currentX, currentY = self.SandbagPosition.getPosition()
 
@@ -295,7 +281,7 @@ class IntegratedSystem(Node):
                 font_size = 0.4
 
             font = cv2.FONT_HERSHEY_SIMPLEX
-            text_position = (int(transformed_point[0] + 10), int(transformed_point[1]))  # í…ìŠ¤íŠ¸ ìœ„ì¹˜ ì¡°ì • (ì› ì˜†)
+            text_position = (int(transformed_point[0] + 10), int(transformed_point[1]))  # 텍스트 위치 조정 (원 옆)
             cv2.putText(self.frame, f"{cost_value:.2f}", text_position, font, font_size, text_color, 1, cv2.LINE_AA)
 
     def drawCurrentPosition(self):
@@ -365,44 +351,36 @@ class IntegratedSystem(Node):
 
 
     def punblish(self):
-        # Float64MultiArray ë©”ì‹œì§€ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
+        # Float64MultiArray 메시지 인스턴스 생성
         msg = Float32MultiArray()
         optimal_action = self.SandbagPosition.getPosition()
-        # if optimal_action is not None:
-        #     # optimal_actionì´ (x, y) íŠœí”Œì¸ ê²½ìš°, ë°ì´í„° í•„ë“œì— í• ë‹¹
-        #     msg.data = [float(optimal_action[0]), float(optimal_action[1])]
-        # else:
-        #     # optimal_actionì´ Noneì¸ ê²½ìš°, ê¸°ë³¸ê°’ìœ¼ë¡œ (1000.0, 1000.0) ì„¤ì •
-        #     optimal_action = (1000.0, 1000.0)
-        #     msg.data = [float(optimal_action[0]), float(optimal_action[1])]
+        if optimal_action is not None:
+            # optimal_action이 (x, y) 튜플인 경우, 데이터 필드에 할당
+            msg.data = [float(optimal_action[0]), float(optimal_action[1])]
+        else:
+            # optimal_action이 None인 경우, 기본값으로 (1000.0, 1000.0) 설정
+            optimal_action = (1000.0, 1000.0)
+            msg.data = [float(optimal_action[0]), float(optimal_action[1])]
 
         # optimal_action = (0, -100)
         # msg.data = [float(optimal_action[0]), float(optimal_action[1])]
-        # axis0_degree, axis1_degree = self.ControlRotation.rotateAnyPoint(optimal_action[0], optimal_action[1], np.deg2rad(self.relative_heading))
-        # axis0_position = self.control_rotation.degreeToPose(axis0_degree)
-        # axis1_position = self.control_rotation.degreeToPose(axis1_degree)
-        # # ì•¡ì…˜ ë°ì´í„° ì „ì†¡
-        # self.action_publisher.publish(msg)
 
-
-        # if not self.isMaxLengthSend:
-        #     maxLength_msg = Float32()
-        #     maxLength_msg.data = float(self.PunchCost.maxLength)
-        #     self.maxLength_publisher.publish(maxLength_msg)
-        #     self.isMaxLengthSend = True
-
-
-        # heading_msg = Float32()
-        # heading_msg.data = float(np.deg2rad(self.relative_heading))
-        # # print(self.relative_heading)
-        # self.relative_heading_publisher.publish(heading_msg)
-
-        axis0_degree, axis1_degree = self.ControlRotation.rotateAnyPoint(optimal_action[0], optimal_action[1], np.deg2rad(self.relative_heading))
-        axis0_position = self.ControlRotation.degreeToPose(axis0_degree)
-        axis1_position = self.ControlRotation.degreeToPose(axis1_degree)
-        print(f"axis0_position, axis1_position = {axis0_position:.2f}, {axis1_position:.2f}")
-        msg.data = [float(axis0_position), float(axis1_position)]
+        
+        # 액션 데이터 전송
         self.action_publisher.publish(msg)
+
+
+        if not self.isMaxLengthSend:
+            maxLength_msg = Float32()
+            maxLength_msg.data = float(self.PunchCost.maxLength)
+            self.maxLength_publisher.publish(maxLength_msg)
+            self.isMaxLengthSend = True
+
+
+        heading_msg = Float32()
+        heading_msg.data = float(np.deg2rad(self.relative_heading))
+        # print(self.relative_heading)
+        self.relative_heading_publisher.publish(heading_msg)
 
 
     def showHandPositions(self, hand):
@@ -506,7 +484,7 @@ class IntegratedSystem(Node):
 
 
     def calculateDegree(self, action):
-        ## person headingì—ì„œ ë°”ê¿€ê¹Œ????
+        ## person heading에서 바꿀까????
         return np.deg2rad(self.person_heading) + action + math.pi / 2
 
 
