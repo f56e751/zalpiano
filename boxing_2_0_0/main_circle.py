@@ -39,6 +39,7 @@ import math
 
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 
+##### at initail frame, solve the problem when only 1 or 2 aruco is visible (no error)
 
 
 class CircularActionGenerator:
@@ -72,8 +73,6 @@ class CircularActionGenerator:
             time.sleep(self.interval)
             return self.circularAction
 
-
-##### at initail frame, solve the problem when only 1 or 2 aruco is visible (no error)
 
 class IntegratedSystem(Node):
     def __init__(self):
@@ -130,7 +129,6 @@ class IntegratedSystem(Node):
         self.CoordinateTransformer = CoordinateTransformer()
         self.CostFunction = None
         self.SandbagPosition = Point()
-        self.CircularActionGenerator = CircularActionGenerator(100,120,0.01)
 
         maximumPhi = np.deg2rad(25)
         maximumLength = 100
@@ -220,13 +218,11 @@ class IntegratedSystem(Node):
             self.getPersonHeading()
 
             self.calculateCost() # TODO ê·¸ë¦¬ëŠ”ê±°ë¥¼ publish ì´í›„ë¡œ ì˜®ê¸°ê¸°
-            self.circle()
             self.punblish()
             ########### draw on frame ################
             
             # self.drawOnFrame()
-            self.drawCirclePosition()
-            # self.drawGrid()
+            self.drawGrid()
             self.putTextOnFrame(f"fps: {self.fps}", (100,30),1, (255,0,0))
             # self.update_visualization()
             
@@ -238,13 +234,6 @@ class IntegratedSystem(Node):
         else:
             self.get_logger().error('Failed to capture frame.')
 
-    def circle(self):
-        self.circleX, self.circleY = self.CircularActionGenerator.circularAction()
-
-    def drawCirclePosition(self):
-        angle = np.radians(self.person_heading - 90)
-        transformed_point = self.CoordinateTransformer.transform(self.center, angle, [self.circleX, self.circleY])
-        self.draw_circle_on_frame(transformed_point, 10, (0, 255, 0), -1)  
 
     def draw_line_with_gradient(self,img, pt1, pt2, max_distance=100):
         # Drawing a basic line
@@ -301,7 +290,6 @@ class IntegratedSystem(Node):
         self.SandbagPosition = self.OptimalAction.getOptimalAction_Graph(self.leftPosition, self.rightPosition, self.center, self.SandbagPosition)
         # self.OptimalAction.getOptimalAction_use_currentPosition()
         
-
 
         
 
@@ -412,14 +400,41 @@ class IntegratedSystem(Node):
     def punblish(self):
         # Float64MultiArray ë©”ì‹œì§€ ì¸ìŠ¤í„´ìŠ¤ ìƒì„±
         msg = Float32MultiArray()
-        # optimal_action = self.SandbagPosition.getPosition()
+        optimal_action = self.SandbagPosition.getPosition()
+        # if optimal_action is not None:
+        #     # optimal_actionì´ (x, y) íŠœí”Œì¸ ê²½ìš°, ë°ì´í„° í•„ë“œì— í• ë‹¹
+        #     msg.data = [float(optimal_action[0]), float(optimal_action[1])]
+        # else:
+        #     # optimal_actionì´ Noneì¸ ê²½ìš°, ê¸°ë³¸ê°’ìœ¼ë¡œ (1000.0, 1000.0) ì„¤ì •
+        #     optimal_action = (1000.0, 1000.0)
+        #     msg.data = [float(optimal_action[0]), float(optimal_action[1])]
 
+        # optimal_action = (0, -100)
+        # msg.data = [float(optimal_action[0]), float(optimal_action[1])]
         # axis0_degree, axis1_degree = self.ControlRotation.rotateAnyPoint(optimal_action[0], optimal_action[1], np.deg2rad(self.relative_heading))
-        # axis0_position = self.ControlRotation.degreeToPose(axis0_degree)
-        # axis1_position = self.ControlRotation.degreeToPose(axis1_degree)
-        # print(f"axis0_position, axis1_position = {axis0_position:.2f}, {axis1_position:.2f}")
-    
-        msg.data = [float(self.circleX), float(self.circleY)]
+        # axis0_position = self.control_rotation.degreeToPose(axis0_degree)
+        # axis1_position = self.control_rotation.degreeToPose(axis1_degree)
+        # # ì•¡ì…˜ ë°ì´í„° ì „ì†¡
+        # self.action_publisher.publish(msg)
+
+
+        # if not self.isMaxLengthSend:
+        #     maxLength_msg = Float32()
+        #     maxLength_msg.data = float(self.PunchCost.maxLength)
+        #     self.maxLength_publisher.publish(maxLength_msg)
+        #     self.isMaxLengthSend = True
+
+
+        # heading_msg = Float32()
+        # heading_msg.data = float(np.deg2rad(self.relative_heading))
+        # # print(self.relative_heading)
+        # self.relative_heading_publisher.publish(heading_msg)
+
+        axis0_degree, axis1_degree = self.ControlRotation.rotateAnyPoint(optimal_action[0], optimal_action[1], np.deg2rad(self.relative_heading))
+        axis0_position = self.ControlRotation.degreeToPose(axis0_degree)
+        axis1_position = self.ControlRotation.degreeToPose(axis1_degree)
+        print(f"axis0_position, axis1_position = {axis0_position:.2f}, {axis1_position:.2f}")
+        msg.data = [float(axis0_position), float(axis1_position)]
         self.action_publisher.publish(msg)
 
 

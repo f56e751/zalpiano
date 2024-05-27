@@ -15,9 +15,7 @@ from punchcostfunction import SegmentCostFunction, LineCostFunction, SegmentCost
 from point import Point
 from optimalAction import OptimalAction
 from controlRotation import ControlRotation
-import socket
-import json
-from socketTest import SocketProtocol
+from  arduinoCommunicator import ArduinoCommunicator
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, Normalize
@@ -114,6 +112,9 @@ class IntegratedSystem(Node):
         DEST_PORT = 9999       # Port number on the receiver
         LOCAL_IP = "10.42.0.13" # Local IP address
         self.SocketProtocol = SocketProtocol(DEST_IP, DEST_PORT, LOCAL_IP)
+
+        self.arduinoCommunicator = ArduinoCommunicator()
+        self.arduinoCommunicator.connect()
         
 
         # self.pipeLength = 100
@@ -382,11 +383,8 @@ class IntegratedSystem(Node):
         axis0_degree, axis1_degree = self.ControlRotation.rotateAnyPoint(optimal_action[0], optimal_action[1], np.deg2rad(self.relative_heading))
         axis0_position = self.ControlRotation.degreeToPose(axis0_degree)
         axis1_position = self.ControlRotation.degreeToPose(axis1_degree)
-        # print(f"axis0_position, axis1_position = {axis0_position:.2f}, {axis1_position:.2f}")
-        # msg.data = [float(axis0_position), float(axis1_position)]
-        # self.action_publisher.publish(msg)
+        self.arduinoCommunicator.send_data(axis0_position,axis1_position)
 
-        self.SocketProtocol.send_coordinates(axis0_position, axis1_position)
 
 
     def showHandPositions(self, hand):
