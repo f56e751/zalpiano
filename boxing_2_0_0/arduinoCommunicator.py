@@ -1,5 +1,6 @@
 import serial
 import time
+import struct
 
 class ArduinoCommunicator:
     def __init__(self, port, baudrate=115200, timeout=1):
@@ -19,15 +20,25 @@ class ArduinoCommunicator:
             print(f"Error connecting to {self.port}: {e}")
             raise
 
+    # def send_data(self, input1, input2):
+    #     """입력 값을 아두이노로 전송합니다."""
+    #     if self.ser is None:
+    #         raise ValueError("Serial connection not established. Call connect() first.")
+        
+    #     input1, input2 = self.scaled(input1, input2)
+
+    #     data = f"{input1},{input2}\n"
+    #     self.ser.write(data.encode())
+    #     print(f"Sent data: {data.strip()}")
+
+
     def send_data(self, input1, input2):
-        """입력 값을 아두이노로 전송합니다."""
         if self.ser is None:
             raise ValueError("Serial connection not established. Call connect() first.")
         
         input1, input2 = self.scaled(input1, input2)
-
-        data = f"{input1},{input2}\n"
-        self.ser.write(data.encode())
+        data = struct.pack('ff', input1, input2) + b'\n'
+        self.ser.write(data)
         print(f"Sent data: {data.strip()}")
 
     def scaled(self, input1, input2):
@@ -40,6 +51,8 @@ class ArduinoCommunicator:
         if self.ser and self.ser.is_open:
             self.ser.close()
             print("Serial connection closed.")
+
+
 
 # 사용 예시
 if __name__ == "__main__":
