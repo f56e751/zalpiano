@@ -107,7 +107,7 @@ class IntegratedSystem(Node):
         semiCriticalDistance = 250
         self.OptimalAction = OptimalAction(self.PunchCost, criticalDistance, semiCriticalDistance)
 
-        port = '/dev/ttyACM0'
+        port = '/dev/ttyArduino'
         self.arduinoCommunicator = ArduinoCommunicator(port)
         self.arduinoCommunicator.connect()
         
