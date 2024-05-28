@@ -7,6 +7,7 @@ class ArduinoCommunicator:
         self.baudrate = baudrate
         self.timeout = timeout
         self.ser = None
+        self.maxPosition = 0.7
 
     def connect(self):
         """시리얼 포트 연결을 초기화합니다."""
@@ -23,9 +24,16 @@ class ArduinoCommunicator:
         if self.ser is None:
             raise ValueError("Serial connection not established. Call connect() first.")
         
+        input1, input2 = self.scaled(input1, input2)
+
         data = f"{input1},{input2}\n"
         self.ser.write(data.encode())
         print(f"Sent data: {data.strip()}")
+
+    def scaled(self, input1, input2):
+        scaledInput1 = (input1 + self.maxPosition) / (self.maxPosition * 2) * 1000 + 1000
+        scaledInput2 = (input2 + self.maxPosition) / (self.maxPosition * 2) * 1000 + 1000
+        return scaledInput1, scaledInput2
 
     def close(self):
         """시리얼 포트를 닫습니다."""

@@ -107,13 +107,8 @@ class IntegratedSystem(Node):
         semiCriticalDistance = 250
         self.OptimalAction = OptimalAction(self.PunchCost, criticalDistance, semiCriticalDistance)
 
-
-        DEST_IP = "10.42.0.1"  # IP address of the receiver
-        DEST_PORT = 9999       # Port number on the receiver
-        LOCAL_IP = "10.42.0.13" # Local IP address
-        self.SocketProtocol = SocketProtocol(DEST_IP, DEST_PORT, LOCAL_IP)
-
-        self.arduinoCommunicator = ArduinoCommunicator()
+        port = '/dev/ttyACM0'
+        self.arduinoCommunicator = ArduinoCommunicator(port)
         self.arduinoCommunicator.connect()
         
 
